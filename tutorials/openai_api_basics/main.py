@@ -37,7 +37,7 @@ def main():
 
         # Check if the user wants to quit the conversation
         if user_message.lower() == "quit":
-            print("Exiting conversation.")
+            print(f"{ENDCOLOR}Exiting conversation.")
             break
 
         # Create the message for the API call
