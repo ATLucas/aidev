@@ -2,10 +2,13 @@ from typing import List
 from openai import OpenAI
 
 # Select your model:
-# NOTE: GPT-4 is temporarily removed from the API as a part of
-# the dev day updates and subsequent overload.
-# MODEL = "gpt-4"
-MODEL = "gpt-3.5-turbo-1106"
+
+# NOTE: GPT-4 models appear to be temporarily removed from the
+# API as a part of the dev day updates and subsequent overload.
+
+# MODEL = "gpt-4" # GPT-4
+# MODEL = "gpt-4-1106-preview" # GPT-4 turbo
+MODEL = "gpt-3.5-turbo-1106"  # GPT-3 turbo
 
 # Adjust the system prompt to tell the AI about their mission,
 # providing any relevant context for the conversation.
