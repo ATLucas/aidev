@@ -4,9 +4,9 @@ import os
 from typing import Dict, List
 
 # Select your model:
-# MODEL = "gpt-4"  # GPT-4
+MODEL = "gpt-4"  # GPT-4
 # MODEL = "gpt-4-1106-preview"  # GPT-4 turbo preview
-MODEL = "gpt-3.5-turbo-1106"  # GPT-3 turbo
+# MODEL = "gpt-3.5-turbo-1106"  # GPT-3 turbo
 
 SYSTEM_PROMPT = """
 # Role
@@ -135,11 +135,13 @@ def ask_chatgpt(client: OpenAI, messages: List[str]):
                 }
             )
             print(
-                f"FUNCTION: \n{function_name}(directory_name={arg_directory_name}): {function_response}"
+                f"FUNCTION: \n{function_name}(directory_name={arg_directory_name}): \n{function_response}"
             )
         response = client.chat.completions.create(
             model=MODEL,
             messages=messages,
+            tools=TOOLS,
+            tool_choice="auto",
         )
         response_message = response.choices[0].message
         tool_calls = response_message.tool_calls
