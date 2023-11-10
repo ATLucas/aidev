@@ -2,13 +2,9 @@ from typing import List
 from openai import OpenAI
 
 # Select your model:
-
-# NOTE: GPT-4 models appear to be temporarily removed from the
-# API as a part of the dev day updates and subsequent overload.
-
-# MODEL = "gpt-4" # GPT-4
-# MODEL = "gpt-4-1106-preview" # GPT-4 turbo
-MODEL = "gpt-3.5-turbo-1106"  # GPT-3 turbo
+MODEL = "gpt-4"  # GPT-4
+# MODEL = "gpt-4-1106-preview"  # GPT-4 turbo (I still don't seem to have access to this model)
+# MODEL = "gpt-3.5-turbo-1106"  # GPT-3 turbo
 
 # Adjust the system prompt to tell the AI about their mission,
 # providing any relevant context for the conversation.
@@ -33,11 +29,16 @@ def main():
 
     while True:
         # Get user input
-        user_message = input(f"{BLUE}You: ")
+        try:
+            user_message = input(f"{BLUE}You: ")
+            print(f"{ENDCOLOR}")
+        except:
+            print(f"{ENDCOLOR}")
+            raise
 
         # Check if the user wants to quit the conversation
         if user_message.lower() == "quit":
-            print(f"{ENDCOLOR}Exiting conversation.")
+            print("Exiting conversation.")
             break
 
         # Create the message for the API call
@@ -45,7 +46,7 @@ def main():
 
         # Ask the assistant
         assistant_message = ask_chatgpt(client, messages)
-        print(f"{ENDCOLOR}{GREEN}Assistant: {assistant_message}{ENDCOLOR}")
+        print(f"{GREEN}Assistant: {assistant_message}{ENDCOLOR}")
 
         # Append the assistant's message to the conversation
         messages.append({"role": "assistant", "content": assistant_message})
