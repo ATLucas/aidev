@@ -1,12 +1,24 @@
+from enum import Enum
 import json
 from openai import OpenAI
 import os
 from typing import Dict, List
 
-# Select your model:
-MODEL = "gpt-4"  # GPT-4
-# MODEL = "gpt-4-1106-preview"  # GPT-4 turbo preview
-# MODEL = "gpt-3.5-turbo-1106"  # GPT-3 turbo
+
+class ModelType(Enum):
+    GPT_4 = "gpt-4"
+    GPT_4_turbo_preview = "gpt-4-1106-preview"
+    GPT_3_5_turbo = "gpt-3.5-turbo-1106"
+
+
+# Choose your model
+MODEL = ModelType.GPT_3_5_turbo
+
+MODEL_PRICING = {
+    ModelType.GPT_4: 0.03,
+    ModelType.GPT_4_turbo_preview: 0.01,
+    ModelType.GPT_3_5_turbo: 0.001,
+}
 
 SYSTEM_PROMPT = """
 # Role
@@ -58,31 +70,40 @@ TOOLS = [
     }
 ]
 
+
+def agent_action_list_files(directory_name: str):
+    directory_name = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "..", "..", directory_name
+    )
+    file_list: List[str] = []
+    for file_name in os.listdir(directory_name):
+        full_file_path = os.path.join(directory_name, file_name)
+        file_type = "FILE" if os.path.isfile(file_name) else "DIR"
+        file_list.append(f"{file_type}: {full_file_path}")
+    return "\n".join(file_list)
+
+
+AVAILABLE_FUNCTIONS = {
+    "agent_action_list_files": agent_action_list_files,
+}
+
 BLUE = "\033[94m"
 GREEN = "\033[92m"
 ENDCOLOR = "\033[0m"
 
+CLIENT = OpenAI()
+
 
 # Define a function to communicate with OpenAI API
 def main():
-    client = OpenAI()
-
     print("You can start the conversation. Type 'quit' to exit.")
 
     while True:
         # To keep the context of the conversation small,
         # we will re-start the context for each user query.
         # This means that the agent will not know about
-        # previous questions that you ask, but that's
+        # previous questions that you ask, but that is
         # acceptable for this experiment.
-        messages = [
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT,
-            }
-        ]
-
-        # Get user input
         try:
             user_message = input(f"{BLUE}You: ")
             print(f"{ENDCOLOR}")
@@ -95,71 +116,88 @@ def main():
             print("Exiting conversation.")
             break
 
-        # Create the message for the API call
-        messages.append({"role": "user", "content": user_message})
-
         # Ask the assistant
-        assistant_message = ask_chatgpt(client, messages)
+        assistant_message = ask_chatgpt(user_message)
         print(f"{GREEN}Assistant: {assistant_message}{ENDCOLOR}")
 
 
-def ask_chatgpt(client: OpenAI, messages: List[str]):
-    initial_response = client.chat.completions.create(
-        model=MODEL,
-        messages=messages,
-        tools=TOOLS,
-        tool_choice="auto",
-    )
-    response_message = initial_response.choices[0].message
-    tool_calls = response_message.tool_calls
-    print(f"INITIAL RESPONSE: \n{response_message}")
+def ask_chatgpt(user_message: str):
+    messages = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT,
+        },
+        {"role": "user", "content": user_message},
+    ]
 
-    while tool_calls:
-        available_functions = {
-            "agent_action_list_files": agent_action_list_files,
-        }
+    # Query GPT
+    response_message = query_chatgpt(messages)
+
+    while response_message.tool_calls:
+        # Add GPT's response to the list of messages
+        # for GPT to use in the next query
         messages.append(response_message)
 
-        for tool_call in tool_calls:
-            function_name = tool_call.function.name
-            function_to_call = available_functions[function_name]
-            function_args: Dict = json.loads(tool_call.function.arguments)
-            arg_directory_name = function_args.get("directory_name")
-            function_response = function_to_call(directory_name=arg_directory_name)
-            messages.append(
-                {
-                    "tool_call_id": tool_call.id,
-                    "role": "tool",
-                    "name": function_name,
-                    "content": function_response,
-                }
-            )
-            print(
-                f"FUNCTION: \n{function_name}(directory_name={arg_directory_name}): \n{function_response}"
-            )
-        response = client.chat.completions.create(
-            model=MODEL,
-            messages=messages,
-            tools=TOOLS,
-            tool_choice="auto",
-        )
-        response_message = response.choices[0].message
-        tool_calls = response_message.tool_calls
-        print(f"RESPONSE: \n{response_message}")
+        # Check if GPT requested that any actions be run
+        for tool_call in response_message.tool_calls:
+            action_response_message = perform_action(tool_call)
+
+            # Add the action response to the list of messages
+            # for GPT to use
+            messages.append(action_response_message)
+
+        # Query GPT again
+        response_message = query_chatgpt(messages)
 
     return response_message.content
 
 
-def agent_action_list_files(directory_name: str):
-    directory_name = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)), "..", "..", directory_name
+def query_chatgpt(messages: List[Dict[str, str]]):
+    # Before sending the query, count the tokens that will be used:
+    num_tokens = 0
+    for message in messages:
+        if isinstance(message, Dict):
+            for value in message.values():
+                num_tokens += count_tokens(value)
+        else:
+            num_tokens += count_tokens(message.content)
+
+    dollars_per_1000_tokens = MODEL_PRICING[MODEL]
+    total_cost = num_tokens * dollars_per_1000_tokens / 1000.0
+    print(f"QUERY: {num_tokens=}, ${total_cost=}")
+
+    # Send the query
+    response = CLIENT.chat.completions.create(
+        model=MODEL.value,
+        messages=messages,
+        tools=TOOLS,
+        tool_choice="auto",
     )
-    file_list: List[str] = []
-    for file_name in os.listdir(directory_name):
-        full_file_path = os.path.join(directory_name, file_name)
-        file_type = "FILE" if os.path.isfile(file_name) else "DIR"
-        file_list.append(f"{file_type}: {full_file_path}")
-    return "\n".join(file_list)
+    response_message = response.choices[0].message
+    print(f"RESPONSE: \n{response_message.content}\n")
+    return response_message
+
+
+def count_tokens(message: str) -> float:
+    return 0
+
+
+def perform_action(tool_call):
+    function_name = tool_call.function.name
+    function_to_call = AVAILABLE_FUNCTIONS[function_name]
+    function_args: Dict = json.loads(tool_call.function.arguments)
+    arg_directory_name = function_args.get("directory_name")
+    function_response = function_to_call(directory_name=arg_directory_name)
+    action_response_message = {
+        "tool_call_id": tool_call.id,
+        "role": "tool",
+        "name": function_name,
+        "content": function_response,
+    }
+    print(
+        f"FUNCTION: \n{function_name}(directory_name={arg_directory_name}): \n{function_response}\n"
+    )
+    return action_response_message
 
 
 if __name__ == "__main__":
