@@ -12,12 +12,13 @@ class ModelType(Enum):
 
 
 # Choose your model
-MODEL = ModelType.GPT_3_5_turbo
+MODEL = ModelType.GPT_4
 
+# Dollars per 1000 tokens
 MODEL_PRICING = {
-    ModelType.GPT_4: 0.03,
-    ModelType.GPT_4_turbo_preview: 0.01,
-    ModelType.GPT_3_5_turbo: 0.001,
+    ModelType.GPT_4: {"prompt": 0.03, "completion": 0.06},
+    ModelType.GPT_4_turbo_preview: {"prompt": 0.01, "completion": 0.03},
+    ModelType.GPT_3_5_turbo: {"prompt": 0.001, "completion": 0.002},
 }
 
 SYSTEM_PROMPT = """
@@ -71,15 +72,23 @@ TOOLS = [
 ]
 
 
+REPO_ROOT = os.path.relpath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
 def agent_action_list_files(directory_name: str):
-    directory_name = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)), "..", "..", directory_name
-    )
+    # Safety check:
+    if directory_name[0] == "/":
+        raise RuntimeError(
+            f"Invalid directory name. Must be relative to repo root. {directory_name=}"
+        )
+
     file_list: List[str] = []
-    for file_name in os.listdir(directory_name):
-        full_file_path = os.path.join(directory_name, file_name)
-        file_type = "FILE" if os.path.isfile(file_name) else "DIR"
-        file_list.append(f"{file_type}: {full_file_path}")
+    actual_dir_path = os.path.join(REPO_ROOT, directory_name)
+    for file_name in os.listdir(actual_dir_path):
+        actual_file_path = os.path.join(actual_dir_path, file_name)
+        agent_file_path = os.path.join(directory_name, file_name)
+        file_type = "DIR" if os.path.isdir(actual_file_path) else "FILE"
+        file_list.append(f"{file_type}: {agent_file_path}")
     return "\n".join(file_list)
 
 
@@ -117,11 +126,11 @@ def main():
             break
 
         # Ask the assistant
-        assistant_message = ask_chatgpt(user_message)
-        print(f"{GREEN}Assistant: {assistant_message}{ENDCOLOR}")
+        ask_chatgpt(user_message)
 
 
 def ask_chatgpt(user_message: str):
+    total_cost = 0
     messages = [
         {
             "role": "system",
@@ -131,7 +140,8 @@ def ask_chatgpt(user_message: str):
     ]
 
     # Query GPT
-    response_message = query_chatgpt(messages)
+    response_message, cost = query_chatgpt(messages)
+    total_cost += cost
 
     while response_message.tool_calls:
         # Add GPT's response to the list of messages
@@ -147,25 +157,13 @@ def ask_chatgpt(user_message: str):
             messages.append(action_response_message)
 
         # Query GPT again
-        response_message = query_chatgpt(messages)
+        response_message, cost = query_chatgpt(messages)
+        total_cost += cost
 
-    return response_message.content
+    print(f"TOTAL COST: {total_cost}")
 
 
 def query_chatgpt(messages: List[Dict[str, str]]):
-    # Before sending the query, count the tokens that will be used:
-    num_tokens = 0
-    for message in messages:
-        if isinstance(message, Dict):
-            for value in message.values():
-                num_tokens += count_tokens(value)
-        else:
-            num_tokens += count_tokens(message.content)
-
-    dollars_per_1000_tokens = MODEL_PRICING[MODEL]
-    total_cost = num_tokens * dollars_per_1000_tokens / 1000.0
-    print(f"QUERY: {num_tokens=}, ${total_cost=}")
-
     # Send the query
     response = CLIENT.chat.completions.create(
         model=MODEL.value,
@@ -174,12 +172,17 @@ def query_chatgpt(messages: List[Dict[str, str]]):
         tool_choice="auto",
     )
     response_message = response.choices[0].message
-    print(f"RESPONSE: \n{response_message.content}\n")
-    return response_message
-
-
-def count_tokens(message: str) -> float:
-    return 0
+    prompt_cost = response.usage.prompt_tokens * MODEL_PRICING[MODEL]["prompt"] / 1000
+    completion_cost = (
+        response.usage.completion_tokens * MODEL_PRICING[MODEL]["completion"] / 1000
+    )
+    total_cost = prompt_cost + completion_cost
+    print(f"PROMPT COST: {prompt_cost}")
+    print(f"COMPLETION COST: {completion_cost}")
+    print(f"TOTAL COST: {total_cost}")
+    if response_message.content:
+        print(f"\n{GREEN}Assistant: \n{response_message.content}{ENDCOLOR}\n")
+    return response_message, total_cost
 
 
 def perform_action(tool_call):
