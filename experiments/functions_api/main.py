@@ -12,7 +12,7 @@ class ModelType(Enum):
 
 
 # Choose your model
-MODEL = ModelType.GPT_4
+MODEL = ModelType.GPT_3_5_turbo
 
 # Dollars per 1000 tokens
 MODEL_PRICING = {
@@ -48,7 +48,6 @@ In order to fulfill the user requests efficiently and accurately, you are to ite
 
 Please operate within the provided role and context to complete your mission with the specified method.
 Show your chain of reasoning and provide your final response to the user.
-
 """
 
 TOOLS = [
@@ -56,13 +55,13 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "agent_action_list_files",
-            "description": "List the files and directories in the specified directory",
+            "description": "List the files and directories in the specified directory within the repository",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "directory_name": {
                         "type": "string",
-                        "description": "The name of the directory to list the contents of",
+                        "description": "The name of the directory within the repository to list the contents of",
                     },
                 },
                 "required": ["directory_name"],
@@ -76,14 +75,16 @@ REPO_ROOT = os.path.relpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 
 def agent_action_list_files(directory_name: str):
-    # Safety check:
-    if directory_name[0] == "/":
-        raise RuntimeError(
-            f"Invalid directory name. Must be relative to repo root. {directory_name=}"
-        )
+    # Safety check
+    if directory_name and directory_name[0] == "/":
+        return ""
+
+    actual_dir_path = os.path.join(REPO_ROOT, directory_name)
+
+    if not os.path.isdir(actual_dir_path):
+        return ""
 
     file_list: List[str] = []
-    actual_dir_path = os.path.join(REPO_ROOT, directory_name)
     for file_name in os.listdir(actual_dir_path):
         actual_file_path = os.path.join(actual_dir_path, file_name)
         agent_file_path = os.path.join(directory_name, file_name)
@@ -177,9 +178,9 @@ def query_chatgpt(messages: List[Dict[str, str]]):
         response.usage.completion_tokens * MODEL_PRICING[MODEL]["completion"] / 1000
     )
     total_cost = prompt_cost + completion_cost
-    print(f"PROMPT COST: {prompt_cost}")
-    print(f"COMPLETION COST: {completion_cost}")
-    print(f"TOTAL COST: {total_cost}")
+    # print(f"PROMPT COST: {prompt_cost}")
+    # print(f"COMPLETION COST: {completion_cost}")
+    # print(f"TOTAL COST: {total_cost}")
     if response_message.content:
         print(f"\n{GREEN}Assistant: \n{response_message.content}{ENDCOLOR}\n")
     return response_message, total_cost
@@ -197,9 +198,8 @@ def perform_action(tool_call):
         "name": function_name,
         "content": function_response,
     }
-    print(
-        f"FUNCTION: \n{function_name}(directory_name={arg_directory_name}): \n{function_response}\n"
-    )
+    # print(f"FUNCTION CALL: {function_name}(directory_name={arg_directory_name})")
+    # print(f"FUNCTION RESPONSE: \n{function_response}\n")
     return action_response_message
 
 
