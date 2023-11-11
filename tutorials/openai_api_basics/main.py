@@ -3,7 +3,7 @@ from openai import OpenAI
 
 # Select your model:
 MODEL = "gpt-4"  # GPT-4
-# MODEL = "gpt-4-1106-preview"  # GPT-4 turbo (I still don't seem to have access to this model)
+# MODEL = "gpt-4-1106-preview"  # GPT-4 turbo preview
 # MODEL = "gpt-3.5-turbo-1106"  # GPT-3 turbo
 
 # Adjust the system prompt to tell the AI about their mission,
