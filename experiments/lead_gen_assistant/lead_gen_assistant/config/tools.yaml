@@ -1,0 +1,37 @@
+- type: function
+  function:
+    name: save_result
+    description: Save the information gathered from the user
+    parameters:
+      type: object
+      properties:
+        result:
+          type: object
+          properties:
+            name:
+              type: string
+              description: User's name
+            email:
+              type: string
+              description: User's email address
+            phone_number:
+              type: string
+              description: User's phone number
+            budget:
+              type: integer
+              description: Number of dollars user is willing to invest
+            investment_goal:
+              type: string
+              description: Description of user's investment goal
+            property_type:
+              type: string
+              description: The type of property the user is looking to invest in
+            property_count:
+              type: integer
+              description: How many properties the user is looking to invest in
+            referral_source:
+              type: string
+              description: How was the user referred to this service
+            referrer_name:
+              type: string
+              description: Name of the person who referred the user to this service

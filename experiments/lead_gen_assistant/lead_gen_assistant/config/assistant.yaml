@@ -1,0 +1,4 @@
+assistant_id: asst_RkmEq9JitVANCU4XGJUip66u
+settings:
+  model: gpt-4-1106-preview
+  run_limit: 20
