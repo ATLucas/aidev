@@ -3,7 +3,7 @@ from openai import OpenAI
 import time
 from typing import Callable, Dict, List
 
-from lead_gen_assistant.utils import ConsoleColor, write_yaml_config
+from newsletter_va.utils import ConsoleColor, write_yaml_config
 
 
 class BasicAssistant:

@@ -1,5 +1,5 @@
 
-# Lead Gen Assistant Instructions
+# Newsletter VA Instructions
 
 This README provides instructions on how to set up a virtual environment, install the package, and run the demo.
 
@@ -7,7 +7,7 @@ This README provides instructions on how to set up a virtual environment, instal
 
 1. **Go to directory for this experiment**
 ```bash
-cd aidev/experiments/lead_gen_assistant
+cd aidev/experiments/newsletter_va
 ```
 
 2. **Create a Virtual Environment**:
@@ -40,7 +40,7 @@ python3 -m venv venv
 ## Run the Demo
 
 ```bash
-python3 lead_gen_assistant/main.py
+python3 newsletter_va/main.py
 ```
 
 ## Deactivating the Virtual Environment

@@ -1,0 +1,87 @@
+- type: function
+  function:
+    name: save_interests
+    description: Save reader's interests
+    parameters:
+      type: object
+      properties:
+        interests:
+          type: string
+          description: Topics within AI and AI autonomy
+
+- type: function
+  function:
+    name: save_industry
+    description: Save reader's industry
+    parameters:
+      type: object
+      properties:
+        industry:
+          type: string
+          description: Reader's industry
+
+- type: function
+  function:
+    name: save_occupation
+    description: Save reader's occupation
+    parameters:
+      type: object
+      properties:
+        occupation:
+          type: string
+          description: Reader's occupation
+
+- type: function
+  function:
+    name: save_coding_skill_level
+    description: Save reader's coding skill level
+    parameters:
+      type: object
+      properties:
+        coding_skill_level:
+          type: string
+          description: Reader's coding skill level
+
+- type: function
+  function:
+    name: save_professional_goals
+    description: Save reader's professional goals or challenges relating to AI
+    parameters:
+      type: object
+      properties:
+        professional_goals:
+          type: string
+          description: Reader's professional goals or challenges relating to AI
+
+- type: function
+  function:
+    name: save_referral_source
+    description: Save how reader found the newsletter
+    parameters:
+      type: object
+      properties:
+        referral_source:
+          type: string
+          description: How the reader found the newsletter
+
+- type: function
+  function:
+    name: save_region_or_timezone
+    description: Save reader's region or time zone
+    parameters:
+      type: object
+      properties:
+        region_or_timezone:
+          type: string
+          description: Reader's region or time zone
+
+- type: function
+  function:
+    name: save_feedback
+    description: Save reader's feedback for the newsletter
+    parameters:
+      type: object
+      properties:
+        feedback:
+          type: string
+          description: Improvements the reader would suggest for the newsletter
