@@ -1,0 +1,3 @@
+settings:
+  model: gpt-4-1106-preview
+  run_limit: 20
