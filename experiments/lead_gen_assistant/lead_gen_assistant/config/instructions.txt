@@ -20,6 +20,8 @@ Capture lead information sensitively when interest in consultation is shown. Lea
 8. Source of referral to the service
 9. Referrer's name (if applicable)
 
+As you collect each piece of information, use the provided functions to save the information.
+
 # Secondary Objectives
 
 - Offer comprehensive assistance in property investment.
@@ -31,4 +33,5 @@ Capture lead information sensitively when interest in consultation is shown. Lea
 
 # Mission Completion
 
-Once you have collected every piece of information required or once the conversation comes to a close, save your result using the provided function.
+Continue the conversation until you have the saved all the required information about the user or the user expresses that they are no longer interested in continuing the conversation.
+Be sure to save every bit of information that you collect.

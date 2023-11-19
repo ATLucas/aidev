@@ -1,5 +1,5 @@
-from typing import Dict
-from lead_gen_assistant.assistants.lead_gen_assistant import LeadGenAssistant
+from lead_gen_assistant.data_saver import DataSaver
+from lead_gen_assistant.assistants.basic_assistant import BasicAssistant
 from lead_gen_assistant.utils import (
     ConsoleColor,
     read_txt_config,
@@ -13,11 +13,22 @@ REQUIRED_OPENAI_VERSION = "1.2.3"
 
 def main():
     validate_openai_version()
-    LeadGenAssistant(
+    data_saver = DataSaver()
+    BasicAssistant(
         config=read_yaml_config("assistant.yaml"),
         instructions=read_txt_config("instructions.txt"),
         tools=read_yaml_config("tools.yaml"),
-        available_functions={"save_result": save_result},
+        available_functions={
+            "save_name": data_saver.save_name,
+            "save_email": data_saver.save_email,
+            "save_phone_number": data_saver.save_phone_number,
+            "save_budget": data_saver.save_budget,
+            "save_investment_goal": data_saver.save_investment_goal,
+            "save_property_type": data_saver.save_property_type,
+            "save_property_count": data_saver.save_property_count,
+            "save_referral_source": data_saver.save_referral_source,
+            "save_referrer_name": data_saver.save_referrer_name,
+        },
         get_user_input_callback=get_user_input,
     ).run()
 
@@ -45,11 +56,6 @@ def get_user_input() -> str:
     except:
         print(f"{ConsoleColor.ENDCOLOR.value}")
         raise
-
-
-def save_result(result: Dict):
-    """Save the result returned by GPT"""
-    print(f"RESULT: {result}")
 
 
 if __name__ == "__main__":

@@ -1,13 +1,12 @@
 import json
 from openai import OpenAI
-import os
 import time
 from typing import Callable, Dict, List
 
 from lead_gen_assistant.utils import ConsoleColor, write_yaml_config
 
 
-class LeadGenAssistant:
+class BasicAssistant:
     def __init__(
         self,
         config: Dict,
@@ -15,6 +14,7 @@ class LeadGenAssistant:
         tools: List[Dict],
         available_functions: Dict[str, Callable],
         get_user_input_callback: Callable,
+        name: str = "BasicAssistant",
     ):
         self._run_limit = config["settings"]["run_limit"]
         self._available_functions = available_functions
@@ -31,7 +31,7 @@ class LeadGenAssistant:
         else:
             print("Creating new assistant")
             assistant = self._client.beta.assistants.create(
-                name=LeadGenAssistant.__name__,
+                name=name,
                 instructions=instructions,
                 model=config["settings"]["model"],
                 tools=tools,
@@ -102,10 +102,10 @@ class LeadGenAssistant:
                 run_id=run.id,
             )
             time.sleep(0.5)
-        show_json(run)
+        # show_json(run)
         self._print_new_messages()
         self._run_count += 1
-        print(f"Run count: {self._run_count}")
+        # print(f"Run count: {self._run_count}")
         return run
 
     def _print_new_messages(self):
@@ -128,9 +128,9 @@ class LeadGenAssistant:
             "tool_call_id": tool_call.id,
             "output": function_response,
         }
-        print(
-            f"{ConsoleColor.CYAN}FUNCTION: {function_name}(**{function_args}) -> {function_response}{ConsoleColor.ENDCOLOR}\n"
-        )
+        # print(
+        #     f"{ConsoleColor.CYAN.value}FUNCTION: {function_name}(**{function_args}) -> {function_response}{ConsoleColor.ENDCOLOR.value}\n"
+        # )
         return action_response_message
 
 

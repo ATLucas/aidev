@@ -1,37 +1,90 @@
 - type: function
   function:
-    name: save_result
-    description: Save the information gathered from the user
+    name: save_name
+    description: Save user's name
     parameters:
       type: object
       properties:
-        result:
-          type: object
-          properties:
-            name:
-              type: string
-              description: User's name
-            email:
-              type: string
-              description: User's email address
-            phone_number:
-              type: string
-              description: User's phone number
-            budget:
-              type: integer
-              description: Number of dollars user is willing to invest
-            investment_goal:
-              type: string
-              description: Description of user's investment goal
-            property_type:
-              type: string
-              description: The type of property the user is looking to invest in
-            property_count:
-              type: integer
-              description: How many properties the user is looking to invest in
-            referral_source:
-              type: string
-              description: How was the user referred to this service
-            referrer_name:
-              type: string
-              description: Name of the person who referred the user to this service
+        name:
+          type: string
+          description: User's name
+- type: function
+  function:
+    name: save_email
+    description: Save the user's email address
+    parameters:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User's email address
+- type: function
+  function:
+    name: save_phone_number
+    description: Save the user's phone number
+    parameters:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          description: User's phone number
+- type: function
+  function:
+    name: save_budget
+    description: Save the user's investment budget info
+    parameters:
+      type: object
+      properties:
+        budget:
+          type: integer
+          description: User's investment budget in dollars
+- type: function
+  function:
+    name: save_investment_goal
+    description: Save the user's investment goal info
+    parameters:
+      type: object
+      properties:
+        investment_goal:
+          type: string
+          description: User's investment goal
+- type: function
+  function:
+    name: save_property_type
+    description: Save the type of property the user is looking to invest in
+    parameters:
+      type: object
+      properties:
+        property_type:
+          type: string
+          description: Type of property the user is looking to invest in
+- type: function
+  function:
+    name: save_property_count
+    description: Save the number of properties the user is looking to invest in
+    parameters:
+      type: object
+      properties:
+        property_count:
+          type: integer
+          description: Number of properties the user is looking to invest in
+- type: function
+  function:
+    name: save_referral_source
+    description: Save info about where the user was referred to the service from
+    parameters:
+      type: object
+      properties:
+        referral_source:
+          type: string
+          description: Where the user was referred from
+- type: function
+  function:
+    name: save_referrer_name
+    description: Save info about who referred the user to the service
+    parameters:
+      type: object
+      properties:
+        referrer_name:
+          type: string
+          description: Who referred the user to the service
