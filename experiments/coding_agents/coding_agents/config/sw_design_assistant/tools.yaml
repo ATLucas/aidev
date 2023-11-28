@@ -31,16 +31,29 @@
 - type: function
   function:
     name: find_file
-    description: Searches for a file with a specific name in a given directory and its subdirectories. Returns a JSON object with the result.
+    description: Searches for files matching a wildcard pattern within a directory and its subdirectories and returns a JSON object with the results.
     parameters:
       type: object
       properties:
         directory:
           type: string
-          description: The directory to start the search from.
-        file_name:
+          description: The base directory to start the search from.
+        pattern:
           type: string
-          description: Name of the file to search for.
+          description: The wildcard pattern to search for files.
       required:
         - directory
-        - file_name
+        - pattern
+
+- type: function
+  function:
+    name: list_directory
+    description: Lists the contents of a specified directory and returns a JSON object with the results.
+    parameters:
+      type: object
+      properties:
+        directory_path:
+          type: string
+          description: Path to the directory whose contents will be listed.
+      required:
+        - directory_path

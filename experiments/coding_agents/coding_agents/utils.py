@@ -1,9 +1,12 @@
 from enum import Enum
+import importlib
+import inspect
 import json
 import openai
 import os
 from packaging import version
 import pkg_resources
+import pkgutil
 from typing import Dict
 import yaml
 
@@ -66,3 +69,22 @@ def get_resource_filepath(filename) -> str:
     return pkg_resources.resource_filename(
         "coding_agents", os.path.join("config", filename)
     )
+
+def get_available_functions(package_name: str) -> Dict:
+
+    # Create an empty dictionary to hold the available functions
+    available_functions = {}
+
+    # Iterate over all the modules within the 'functions' package
+    for _, module_name, _ in pkgutil.iter_modules([os.path.join(package_name.replace('.', '/'))]):
+        # Import the module
+        module = importlib.import_module(f'{package_name}.{module_name}')
+        
+        # Iterate over all items in the module
+        for item_name in dir(module):
+            item = getattr(module, item_name)
+            # Check if the item is a function and not a built-in function
+            if inspect.isfunction(item) and item.__module__ == module.__name__:
+                available_functions[item_name] = item
+
+    return available_functions
