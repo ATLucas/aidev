@@ -1,0 +1,46 @@
+- type: function
+  function:
+    name: read_file
+    description: Reads the content of a specified file and returns a JSON object with the result.
+    parameters:
+      type: object
+      properties:
+        file_path:
+          type: string
+          description: Path to the file that needs to be read.
+      required:
+        - file_path
+
+- type: function
+  function:
+    name: write_file
+    description: Writes given content to a specified file and returns a JSON object with the result. Creates the file if it doesn't exist.
+    parameters:
+      type: object
+      properties:
+        file_path:
+          type: string
+          description: Path to the file where the content will be written.
+        content:
+          type: string
+          description: Content to be written to the file.
+      required:
+        - file_path
+        - content
+
+- type: function
+  function:
+    name: find_file
+    description: Searches for a file with a specific name in a given directory and its subdirectories. Returns a JSON object with the result.
+    parameters:
+      type: object
+      properties:
+        directory:
+          type: string
+          description: The directory to start the search from.
+        file_name:
+          type: string
+          description: Name of the file to search for.
+      required:
+        - directory
+        - file_name
