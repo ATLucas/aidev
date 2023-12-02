@@ -13,13 +13,13 @@ from coding_agents.utils import (
 )
 
 
-class BasicAssistant:
+class BasicAgent:
     def __init__(
         self,
         config_dir: str,
         available_functions: Dict[str, Callable],
         get_user_input_callback: Callable,
-        name: str = "BasicAssistant",
+        name: str = "BasicAgent",
     ):
         config = read_yaml_config(os.path.join(config_dir, "config.yaml"))
         assistant_config = config["assistant"]
