@@ -70,3 +70,16 @@
           description: Path of the directory to be created.
       required:
         - directory_path
+
+- type: function
+  function:
+    name: record_memory
+    description: Records an AI agent's memory to file and returns a JSON object with the result.
+    parameters:
+      type: object
+      properties:
+        memory:
+          type: string
+          description: A string containing the AI agent's memory.
+      required:
+        - memory

@@ -1,35 +1,34 @@
 # External
 import json
 from openai import OpenAI
+import os
 from typing import Callable, Dict, List
 
 # Internal
-from coding_agents.utils import DEBUG, MODEL_PRICING, ConsoleColor, ModelType
+from coding_agents.utils import DEBUG, MODEL_PRICING, ConsoleColor, ModelType, generate_agent_id
 
 
 class Agent:
-    def __init__(self, instructions: str, tools: Dict, actions: Dict[str, Callable]):
+    def __init__(self, instructions: str, tools: Dict, actions: Dict[str, Callable], agent_id: str = None):
         self._instructions = instructions
         self._tools = tools
         self._actions = actions
+        self._actions["record_memory"] = self._record_memory
         self._client = OpenAI()
-        
-        # Check for existing ID
-        # id_file_path = os.path.join(config_dir, "agent_id.txt")
-        # if os.path.exists(id_file_path):
-        #     with open(id_file_path, 'r') as file:
-        #         self.id = file.read().strip()
-        # else:
-        #     self.id = generate_agent_id()
-        #     with open(id_file_path, 'w') as file:
-        #         file.write(self.id)
+
+        if agent_id is None:
+            self._id = generate_agent_id()
+            os.makedirs(f"agents_data/{self._id}", exist_ok=True)
+
+        self._memory = self._read_memory()
+
 
     def perform_step(self, model: ModelType, user_prompt: str):
         total_cost = 0
         messages = [
             {
                 "role": "system",
-                "content": self._instructions,
+                "content": self._instructions.format(memory=self._memory),
             },
             {"role": "user", "content": user_prompt},
         ]
@@ -57,6 +56,50 @@ class Agent:
         if DEBUG:
             print(f"TOTAL COST: {total_cost}")
 
+    def _read_memory(self):
+        """
+        Reads the memory of an AI agent from a file. If the file doesn't exist, 
+        a default memory string is used.
+        
+        :return: A string containing the AI agent's memory.
+        """
+        file_path = f"agents_data/{self._id}/memory.md"
+        default_memory = "This is the start of the conversation."
+
+        try:
+            # Check if the file exists
+            if os.path.exists(file_path):
+                with open(file_path, 'r') as file:
+                    return file.read()
+            else:
+                return default_memory
+        except Exception as e:
+            print(f"Error reading memory file: {e}")
+            return default_memory
+        
+    def _record_memory(self, memory: str):
+        """
+        Records the memory of an AI agent to a file.
+
+        :param memory: A string containing the AI agent's memory.
+        :return: A JSON string with the operation result.
+        """
+        self._memory = memory
+
+        directory = f"agents_data/{self._id}"
+        file_path = f"{directory}/memory.md"
+
+        try:
+            # Create directory if it doesn't exist
+            os.makedirs(directory, exist_ok=True)
+
+            # Write memory to file
+            with open(file_path, 'w') as file:
+                file.write(memory)
+
+            return json.dumps({"success": True, "message": f"Memory recorded successfully in '{file_path}'."})
+        except Exception as e:
+            return json.dumps({"success": False, "error": str(e)})
 
     def _query_model(self, model: ModelType, messages: List[Dict[str, str]]):
         # Send the query
