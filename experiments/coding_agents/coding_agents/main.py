@@ -20,7 +20,7 @@ def main():
             print(f"{ConsoleColor.ENDCOLOR.value}")
             raise
 
-        coder_agent.perform_step(ModelType.GPT_4_turbo, user_prompt)
+        coder_agent.perform_step(ModelType.GPT_4, user_prompt)
 
 
 if __name__ == "__main__":

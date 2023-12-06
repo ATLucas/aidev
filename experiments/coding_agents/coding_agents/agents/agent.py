@@ -5,7 +5,7 @@ import os
 from typing import Callable, Dict, List
 
 # Internal
-from coding_agents.utils import DEBUG, MODEL_PRICING, ConsoleColor, ModelType, generate_agent_id
+from coding_agents.utils import DEBUG, MODEL_PRICING, ConsoleColor, ModelType, generate_agent_id, read_txt_config
 
 
 class Agent:
@@ -13,7 +13,8 @@ class Agent:
         self._instructions = instructions
         self._tools = tools
         self._actions = actions
-        self._actions["record_memory"] = self._record_memory
+        self._user_prompt = read_txt_config("agent/user_prompt.md")
+        self._memory_prompt = read_txt_config("agent/memory_prompt.md")
         self._client = OpenAI()
 
         if agent_id is None:
@@ -23,14 +24,11 @@ class Agent:
         self._memory = self._read_memory()
 
 
-    def perform_step(self, model: ModelType, user_prompt: str):
+    def perform_step(self, model: ModelType, user_request: str):
         total_cost = 0
         messages = [
-            {
-                "role": "system",
-                "content": self._instructions.format(memory=self._memory),
-            },
-            {"role": "user", "content": user_prompt},
+            {"role": "system", "content": self._instructions},
+            {"role": "user", "content": self._user_prompt.format(memory=self._memory, user_request=user_request)},
         ]
 
         # Query model
@@ -53,8 +51,24 @@ class Agent:
             response_message, cost = self._query_model(model, messages)
             total_cost += cost
 
+        # Prompt AI to generate memory
+        messages.append({"role": "user", "content": self._memory_prompt})
+
+        # Query model for updated memory content
         if DEBUG:
-            print(f"TOTAL COST: {total_cost}")
+            print("QUERYING MODEL FOR MEMORY")
+        response_message, cost = self._query_model(ModelType.GPT_3_5_turbo, messages)
+        total_cost += cost
+
+        # Write the updated memory content to file
+        self._memory = response_message.content
+        if DEBUG:
+            print(f"MEMORY: {self._memory}")
+        if self._memory:
+            self._record_memory(self._memory)
+
+        if DEBUG:
+            print(f"STEP TOTAL COST: {total_cost}")
 
     def _read_memory(self):
         """
@@ -89,17 +103,12 @@ class Agent:
         directory = f"agents_data/{self._id}"
         file_path = f"{directory}/memory.md"
 
-        try:
-            # Create directory if it doesn't exist
-            os.makedirs(directory, exist_ok=True)
+        # Create directory if it doesn't exist
+        os.makedirs(directory, exist_ok=True)
 
-            # Write memory to file
-            with open(file_path, 'w') as file:
-                file.write(memory)
-
-            return json.dumps({"success": True, "message": f"Memory recorded successfully in '{file_path}'."})
-        except Exception as e:
-            return json.dumps({"success": False, "error": str(e)})
+        # Write memory to file
+        with open(file_path, 'w') as file:
+            file.write(memory)
 
     def _query_model(self, model: ModelType, messages: List[Dict[str, str]]):
         # Send the query
@@ -116,9 +125,9 @@ class Agent:
         )
         total_cost = prompt_cost + completion_cost
         if DEBUG:
-            print(f"PROMPT COST: {prompt_cost}")
-            print(f"COMPLETION COST: {completion_cost}")
-            print(f"TOTAL COST: {total_cost}")
+            print(f"QUERY PROMPT COST: {prompt_cost}")
+            print(f"QUERY COMPLETION COST: {completion_cost}")
+            print(f"QUERY TOTAL COST: {total_cost}")
         if response_message.content:
             print(f"\n{ConsoleColor.GREEN.value}Assistant: \n{response_message.content}{ConsoleColor.ENDCOLOR.value}\n")
         return response_message, total_cost
