@@ -9,7 +9,7 @@ from typing import Callable, Dict
 from coding_agents.utils import DEBUG, ConsoleColor, ModelType, generate_agent_id
 
 
-class Agent2:
+class Agent:
     def __init__(
         self,
         instructions: str,
