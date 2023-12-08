@@ -2,7 +2,7 @@
 import json
 from openai import OpenAI
 import os
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Optional
 
 # Internal
 from coding_agents.utils import (
@@ -21,11 +21,13 @@ class Agent:
         instructions: str,
         tools: Dict,
         actions: Dict[str, Callable],
-        agent_id: str = None,
+        model: Optional[ModelType] = None,
+        agent_id: Optional[str] = None,
     ):
         self._instructions = instructions
         self._tools = tools
         self._actions = actions
+        self._model = model  # Not used currently
         self._user_prompt = read_txt_config("agent/user_prompt.md")
         self._memory_prompt = read_txt_config("agent/memory_prompt.md")
         self._client = OpenAI()

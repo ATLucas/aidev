@@ -3,7 +3,7 @@ import json
 from openai import OpenAI
 import os
 import time
-from typing import Callable, Dict
+from typing import Callable, Dict, Optional
 
 # Internal
 from coding_agents.utils import DEBUG, ConsoleColor, ModelType, generate_agent_id
@@ -15,11 +15,13 @@ class Agent:
         instructions: str,
         tools: Dict,
         actions: Dict[str, Callable],
-        agent_id: str = None,
+        model: Optional[ModelType] = None,
+        agent_id: Optional[str] = None,
     ):
         self._instructions = instructions
         self._tools = tools
         self._actions = actions
+        self._model = model
         self._client = OpenAI()
 
         self._id = generate_agent_id() if agent_id is None else agent_id
@@ -32,6 +34,7 @@ class Agent:
                 name=self._id,
                 instructions=instructions,
                 tools=tools,
+                model=self._model.value,  # Overridden in perform_step
             )
             self._assistant_id = self._assistant.id
             os.makedirs(agent_data_dir, exist_ok=True)
@@ -56,7 +59,7 @@ class Agent:
         run = self._client.beta.threads.runs.create(
             thread_id=self._thread.id,
             assistant_id=self._assistant_id,
-            model=model.name,
+            model=model.value,
         )
         run = self._wait_for_assistant(run)
 
@@ -82,8 +85,8 @@ class Agent:
                 run_id=run.id,
             )
             time.sleep(0.5)
-        if DEBUG:
-            show_json(run)
+        # if DEBUG:
+        #     show_json(run)
         self._print_new_messages()
         return run
 

@@ -1,1 +1,0 @@
-I received a request to fix an error in the Snake Game code. The error was an IndentationError on line 86 of the snake_game.py file. I read the content of the file, found the error in the code, and then rewrote the corrected code to the same file. The update was successful, and the file was written back without any issues.

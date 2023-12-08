@@ -1,4 +1,5 @@
-from coding_agents.agents.agent_latent_space import Agent
+# from coding_agents.agents.agent_latent_space import Agent
+from coding_agents.agents.agent_assistants_api import Agent
 from coding_agents.utils import (
     ConsoleColor,
     ModelType,
@@ -8,6 +9,10 @@ from coding_agents.utils import (
     validate_openai_version,
 )
 
+# MODEL = ModelType.GPT_3_5_turbo
+MODEL = ModelType.GPT_4_turbo
+# MODEL = ModelType.GPT_4
+
 
 def main():
     validate_openai_version()
@@ -15,6 +20,7 @@ def main():
         instructions=read_txt_config("coder_agent/instructions.md"),
         tools=read_yaml_config("coder_agent/tools.yaml"),
         actions=get_available_actions("coding_agents.actions"),
+        model=MODEL,
     )
 
     while True:
@@ -27,7 +33,7 @@ def main():
             print(f"{ConsoleColor.ENDCOLOR.value}")
             raise
 
-        coder_agent.perform_step(ModelType.GPT_4_turbo, user_prompt)
+        coder_agent.perform_step(MODEL, user_prompt)
 
 
 if __name__ == "__main__":
