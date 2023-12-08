@@ -1,5 +1,12 @@
 from coding_agents.agents.agent_latent_space import Agent
-from coding_agents.utils import ConsoleColor, ModelType, get_available_actions, read_txt_config, read_yaml_config, validate_openai_version
+from coding_agents.utils import (
+    ConsoleColor,
+    ModelType,
+    get_available_actions,
+    read_txt_config,
+    read_yaml_config,
+    validate_openai_version,
+)
 
 
 def main():

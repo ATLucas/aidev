@@ -27,6 +27,7 @@ class ModelType(Enum):
     GPT_4_turbo = "gpt-4-1106-preview"
     GPT_3_5_turbo = "gpt-3.5-turbo-1106"
 
+
 # Dollars per 1000 tokens
 MODEL_PRICING = {
     ModelType.GPT_4: {"prompt": 0.03, "completion": 0.06},
@@ -84,16 +85,18 @@ def get_resource_filepath(filename) -> str:
         "coding_agents", os.path.join("config", filename)
     )
 
-def get_available_actions(package_name: str) -> Dict:
 
+def get_available_actions(package_name: str) -> Dict:
     # Create an empty dictionary to hold the available actions
     available_actions = {}
 
     # Iterate over all the modules within the 'actions' package
-    for _, module_name, _ in pkgutil.iter_modules([os.path.join(package_name.replace('.', '/'))]):
+    for _, module_name, _ in pkgutil.iter_modules(
+        [os.path.join(package_name.replace(".", "/"))]
+    ):
         # Import the module
-        module = importlib.import_module(f'{package_name}.{module_name}')
-        
+        module = importlib.import_module(f"{package_name}.{module_name}")
+
         # Iterate over all items in the module
         for item_name in dir(module):
             item = getattr(module, item_name)
@@ -103,8 +106,10 @@ def get_available_actions(package_name: str) -> Dict:
 
     return available_actions
 
+
 # Sample list of adjectives and nouns for generating human-readable names
 unique_names = None
+
 
 def generate_agent_id():
     """

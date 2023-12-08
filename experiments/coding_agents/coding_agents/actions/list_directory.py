@@ -1,6 +1,7 @@
 import os
 import json
 
+
 def list_directory(directory_path):
     """
     Lists the contents of the specified directory.
@@ -15,4 +16,6 @@ def list_directory(directory_path):
     except FileNotFoundError:
         return json.dumps({"success": False, "error": "Directory not found"})
     except OSError as e:
-        return json.dumps({"success": False, "error": f"Error accessing directory: {e}"})
+        return json.dumps(
+            {"success": False, "error": f"Error accessing directory: {e}"}
+        )

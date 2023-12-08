@@ -44,9 +44,7 @@ class Agent:
 
         self._thread = self._client.beta.threads.create()
 
-
     def perform_step(self, model: ModelType, user_request: str):
-
         message = self._client.beta.threads.messages.create(
             thread_id=self._thread.id,
             role="user",

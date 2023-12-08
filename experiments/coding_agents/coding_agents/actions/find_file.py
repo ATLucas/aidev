@@ -2,6 +2,7 @@ import os
 import json
 from glob import glob
 
+
 def find_file(directory, pattern):
     """
     Searches for files matching a wildcard pattern within a directory and its subdirectories.
@@ -20,9 +21,12 @@ def find_file(directory, pattern):
         if matching_files:
             return json.dumps({"success": True, "file_paths": matching_files})
         else:
-            return json.dumps({"success": False, "error": "No files found matching the pattern"})
+            return json.dumps(
+                {"success": False, "error": "No files found matching the pattern"}
+            )
     except Exception as e:
         return json.dumps({"success": False, "error": str(e)})
+
 
 # Example usage:
 # print(find_file('/path/to/search', '*.txt'))

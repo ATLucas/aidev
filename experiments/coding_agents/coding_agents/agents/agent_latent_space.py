@@ -5,11 +5,24 @@ import os
 from typing import Callable, Dict, List
 
 # Internal
-from coding_agents.utils import DEBUG, MODEL_PRICING, ConsoleColor, ModelType, generate_agent_id, read_txt_config
+from coding_agents.utils import (
+    DEBUG,
+    MODEL_PRICING,
+    ConsoleColor,
+    ModelType,
+    generate_agent_id,
+    read_txt_config,
+)
 
 
 class Agent:
-    def __init__(self, instructions: str, tools: Dict, actions: Dict[str, Callable], agent_id: str = None):
+    def __init__(
+        self,
+        instructions: str,
+        tools: Dict,
+        actions: Dict[str, Callable],
+        agent_id: str = None,
+    ):
         self._instructions = instructions
         self._tools = tools
         self._actions = actions
@@ -23,12 +36,16 @@ class Agent:
 
         self._memory = self._read_memory()
 
-
     def perform_step(self, model: ModelType, user_request: str):
         total_cost = 0
         messages = [
             {"role": "system", "content": self._instructions},
-            {"role": "user", "content": self._user_prompt.format(memory=self._memory, user_request=user_request)},
+            {
+                "role": "user",
+                "content": self._user_prompt.format(
+                    memory=self._memory, user_request=user_request
+                ),
+            },
         ]
 
         # Query model
@@ -72,9 +89,9 @@ class Agent:
 
     def _read_memory(self):
         """
-        Reads the memory of an AI agent from a file. If the file doesn't exist, 
+        Reads the memory of an AI agent from a file. If the file doesn't exist,
         a default memory string is used.
-        
+
         :return: A string containing the AI agent's memory.
         """
         file_path = f"agents_data/{self._id}/memory.md"
@@ -83,14 +100,14 @@ class Agent:
         try:
             # Check if the file exists
             if os.path.exists(file_path):
-                with open(file_path, 'r') as file:
+                with open(file_path, "r") as file:
                     return file.read()
             else:
                 return default_memory
         except Exception as e:
             print(f"Error reading memory file: {e}")
             return default_memory
-        
+
     def _record_memory(self, memory: str):
         """
         Records the memory of an AI agent to a file.
@@ -107,7 +124,7 @@ class Agent:
         os.makedirs(directory, exist_ok=True)
 
         # Write memory to file
-        with open(file_path, 'w') as file:
+        with open(file_path, "w") as file:
             file.write(memory)
 
     def _query_model(self, model: ModelType, messages: List[Dict[str, str]]):
@@ -119,7 +136,9 @@ class Agent:
             tool_choice="auto",
         )
         response_message = response.choices[0].message
-        prompt_cost = response.usage.prompt_tokens * MODEL_PRICING[model]["prompt"] / 1000
+        prompt_cost = (
+            response.usage.prompt_tokens * MODEL_PRICING[model]["prompt"] / 1000
+        )
         completion_cost = (
             response.usage.completion_tokens * MODEL_PRICING[model]["completion"] / 1000
         )
@@ -129,7 +148,9 @@ class Agent:
             print(f"QUERY COMPLETION COST: {completion_cost}")
             print(f"QUERY TOTAL COST: {total_cost}")
         if response_message.content:
-            print(f"\n{ConsoleColor.GREEN.value}Assistant: \n{response_message.content}{ConsoleColor.ENDCOLOR.value}\n")
+            print(
+                f"\n{ConsoleColor.GREEN.value}Assistant: \n{response_message.content}{ConsoleColor.ENDCOLOR.value}\n"
+            )
         return response_message, total_cost
 
     def _perform_action(self, tool_call):
