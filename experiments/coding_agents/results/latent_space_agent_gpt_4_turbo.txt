@@ -1,0 +1,264 @@
+(venv) andrewlucas@Andrews-MBP coding_agents % python3 coding_agents/main.py
+OpenAI version is compatible.
+You: Write a script to play Snake Game in the terminal and write it into a directory named snake_game
+
+QUERY PROMPT COST: 0.0058
+QUERY COMPLETION COST: 0.00047999999999999996
+QUERY TOTAL COST: 0.006279999999999999
+FUNCTION: make_directory(**{'directory_path': 'snake_game'}) -> {"success": true, "message": "Directory 'snake_game' created successfully."}
+
+QUERY PROMPT COST: 0.00622
+QUERY COMPLETION COST: 0.019469999999999998
+QUERY TOTAL COST: 0.025689999999999998
+FUNCTION: write_file(**{'file_path': 'snake_game/snake_game.py', 'content': "# Import libraries\nimport random\nimport curses\n\n# Initialize the screen\ns = curses.initscr()\ncurses.curs_set(0)\nsh, sw = s.getmaxyx()\nw = curses.newwin(sh, sw, 0, 0)\nw.keypad(1)\nw.timeout(100)\n\n# Snake initial position\nsnk_x = sw//4\nsnk_y = sh//2\nsnake = [\n    [snk_y, snk_x],\n    [snk_y, snk_x-1],\n    [snk_y, snk_x-2]\n]\n\n# Food initial position\nfood = [sh//2, sw//2]\nw.addch(int(food[0]), int(food[1]), curses.ACS_PI)\n\n# Initial direction\nkey = curses.KEY_RIGHT\n\n# Function to get next key\ndef get_next_key(current_key):\n    next_key = w.getch()\n    \n    # If no input is given, -1 is returned, and the snake keeps moving in the current direction\n    return current_key if next_key == -1 else next_key\n\n# Game loop\nwhile True:\n    next_key = get_next_key(key)\n    if snake[0][0] in [0, sh] or \\\n        snake[0][1]  in [0, sw] or \\\n        snake[0] in snake[1:]:\n        curses.endwin()\n        quit()\n    \n    # Calculate the new head of the snake\n    new_head = [snake[0][0], snake[0][1]]\n    \n    # Update snake direction based on key\n    if next_key == curses.KEY_DOWN:\n        new_head[0] += 1\n    if next_key == curses.KEY_UP:\n        new_head[0] -= 1\n    if next_key == curses.KEY_LEFT:\n        new_head[1] -= 1\n    if next_key == curses.KEY_RIGHT:\n        new_head[1] += 1\n    \n    snake.insert(0, new_head)\n\n    # Check if the snake has gotten the food\n    if snake[0] == food:\n        food = None\n        while food is None:\n            nf = [\n                random.randint(1, sh-1),\n                random.randint(1, sw-1)\n            ]\n            food = nf if nf not in snake else None\n        w.addch(food[0], food[1], curses.ACS_PI)\n    else:\n        tail = snake.pop()\n        w.addch(int(tail[0]), int(tail[1]), ' ')\n    \n    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)\n"}) -> {"success": true, "message": "Content written to file successfully"}
+
+QUERY PROMPT COST: 0.01288
+QUERY COMPLETION COST: 0.00078
+QUERY TOTAL COST: 0.01366
+
+Assistant: 
+I have written the script for the Snake Game and saved it in the `snake_game` directory as `snake_game.py`.
+
+QUERYING MODEL FOR MEMORY
+QUERY PROMPT COST: 0.001386
+QUERY COMPLETION COST: 0.000188
+QUERY TOTAL COST: 0.001574
+
+Assistant: 
+The user requested a Python script to play the Snake Game in the terminal and to write it into a directory named "snake_game." I created the "snake_game" directory and wrote a Python script named "snake_game.py" that contains the necessary code to play the Snake Game in the terminal. The script initializes the game environment, creates the snake and food, handles user input, and defines the game loop to control the movement and behavior of the snake and food.
+
+MEMORY: The user requested a Python script to play the Snake Game in the terminal and to write it into a directory named "snake_game." I created the "snake_game" directory and wrote a Python script named "snake_game.py" that contains the necessary code to play the Snake Game in the terminal. The script initializes the game environment, creates the snake and food, handles user input, and defines the game loop to control the movement and behavior of the snake and food.
+STEP TOTAL COST: 0.047203999999999996
+You: The snake always goes to the right, even if I press up or down. Pressing left immediately loses. Can you fix it?
+
+QUERY PROMPT COST: 0.006730000000000001
+QUERY COMPLETION COST: 0.0006
+QUERY TOTAL COST: 0.007330000000000001
+FUNCTION: read_file(**{'file_path': 'snake_game/snake_game.py'}) -> {"success": true, "content": "# Import libraries\nimport random\nimport curses\n\n# Initialize the screen\ns = curses.initscr()\ncurses.curs_set(0)\nsh, sw = s.getmaxyx()\nw = curses.newwin(sh, sw, 0, 0)\nw.keypad(1)\nw.timeout(100)\n\n# Snake initial position\nsnk_x = sw//4\nsnk_y = sh//2\nsnake = [\n    [snk_y, snk_x],\n    [snk_y, snk_x-1],\n    [snk_y, snk_x-2]\n]\n\n# Food initial position\nfood = [sh//2, sw//2]\nw.addch(int(food[0]), int(food[1]), curses.ACS_PI)\n\n# Initial direction\nkey = curses.KEY_RIGHT\n\n# Function to get next key\ndef get_next_key(current_key):\n    next_key = w.getch()\n    \n    # If no input is given, -1 is returned, and the snake keeps moving in the current direction\n    return current_key if next_key == -1 else next_key\n\n# Game loop\nwhile True:\n    next_key = get_next_key(key)\n    if snake[0][0] in [0, sh] or \\\n        snake[0][1]  in [0, sw] or \\\n        snake[0] in snake[1:]:\n        curses.endwin()\n        quit()\n    \n    # Calculate the new head of the snake\n    new_head = [snake[0][0], snake[0][1]]\n    \n    # Update snake direction based on key\n    if next_key == curses.KEY_DOWN:\n        new_head[0] += 1\n    if next_key == curses.KEY_UP:\n        new_head[0] -= 1\n    if next_key == curses.KEY_LEFT:\n        new_head[1] -= 1\n    if next_key == curses.KEY_RIGHT:\n        new_head[1] += 1\n    \n    snake.insert(0, new_head)\n\n    # Check if the snake has gotten the food\n    if snake[0] == food:\n        food = None\n        while food is None:\n            nf = [\n                random.randint(1, sh-1),\n                random.randint(1, sw-1)\n            ]\n            food = nf if nf not in snake else None\n        w.addch(food[0], food[1], curses.ACS_PI)\n    else:\n        tail = snake.pop()\n        w.addch(int(tail[0]), int(tail[1]), ' ')\n    \n    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)\n"}
+
+QUERY PROMPT COST: 0.013300000000000001
+QUERY COMPLETION COST: 0.00735
+QUERY TOTAL COST: 0.02065
+
+Assistant: 
+The problem might be in the logic handling key inputs and direction changes of the snake. This could include ignoring certain key inputs or incorrectly processing them, causing the snake to only move right regardless of user input, and immediately lose when pressing left.
+
+To fix this issue, I will first review the existing key input and direction update logic to identify the problem. Once identified, I will modify the code so that pressing up or down will correctly change the snake's direction to up or down, respectively. Pressing left should also correctly change the snake's direction to the left without causing an immediate loss.
+
+I will now proceed to update the code accordingly.
+There's a missing control structure to prevent the snake from reversing into itself, which usually causes an instant loss. For instance, if the snake is moving right, pressing the left key should be ignored since it would cause the snake to move directly into itself.
+
+I will add this control structure, ensuring that the snake is not allowed to reverse its direction 180 degrees and thus fixing the problem with the left key causing an immediate loss. Additionally, I'll make sure the up and down controls are correctly interpreted to move the snake in the desired direction. Let's fix the code.
+
+QUERYING MODEL FOR MEMORY
+QUERY PROMPT COST: 0.001428
+QUERY COMPLETION COST: 0.00019
+QUERY TOTAL COST: 0.001618
+
+Assistant: 
+I received a request to fix the snake game script. The existing Python script for the Snake Game was written into a directory named "snake_game." The script initializes the game environment, creates the snake and food, handles user input, and defines the game loop to control the movement and behavior of the snake and food. Upon review, it was found that the snake's movement is not properly handled, and it always moves to the right even if other directional keys are pressed.
+
+MEMORY: I received a request to fix the snake game script. The existing Python script for the Snake Game was written into a directory named "snake_game." The script initializes the game environment, creates the snake and food, handles user input, and defines the game loop to control the movement and behavior of the snake and food. Upon review, it was found that the snake's movement is not properly handled, and it always moves to the right even if other directional keys are pressed.
+STEP TOTAL COST: 0.029598000000000003
+You: Good, now please fix the code.
+
+QUERY PROMPT COST: 0.006549999999999999
+QUERY COMPLETION COST: 0.00078
+QUERY TOTAL COST: 0.00733
+FUNCTION: find_file(**{'directory': 'snake_game', 'pattern': '*.py'}) -> {"success": true, "file_paths": ["/Users/andrewlucas/dev/aidev/experiments/coding_agents/snake_game/snake_game.py"]}
+
+QUERY PROMPT COST: 0.00717
+QUERY COMPLETION COST: 0.00108
+QUERY TOTAL COST: 0.00825
+FUNCTION: read_file(**{'file_path': '/Users/andrewlucas/dev/aidev/experiments/coding_agents/snake_game/snake_game.py'}) -> {"success": true, "content": "# Import libraries\nimport random\nimport curses\n\n# Initialize the screen\ns = curses.initscr()\ncurses.curs_set(0)\nsh, sw = s.getmaxyx()\nw = curses.newwin(sh, sw, 0, 0)\nw.keypad(1)\nw.timeout(100)\n\n# Snake initial position\nsnk_x = sw//4\nsnk_y = sh//2\nsnake = [\n    [snk_y, snk_x],\n    [snk_y, snk_x-1],\n    [snk_y, snk_x-2]\n]\n\n# Food initial position\nfood = [sh//2, sw//2]\nw.addch(int(food[0]), int(food[1]), curses.ACS_PI)\n\n# Initial direction\nkey = curses.KEY_RIGHT\n\n# Function to get next key\ndef get_next_key(current_key):\n    next_key = w.getch()\n    \n    # If no input is given, -1 is returned, and the snake keeps moving in the current direction\n    return current_key if next_key == -1 else next_key\n\n# Game loop\nwhile True:\n    next_key = get_next_key(key)\n    if snake[0][0] in [0, sh] or \\\n        snake[0][1]  in [0, sw] or \\\n        snake[0] in snake[1:]:\n        curses.endwin()\n        quit()\n    \n    # Calculate the new head of the snake\n    new_head = [snake[0][0], snake[0][1]]\n    \n    # Update snake direction based on key\n    if next_key == curses.KEY_DOWN:\n        new_head[0] += 1\n    if next_key == curses.KEY_UP:\n        new_head[0] -= 1\n    if next_key == curses.KEY_LEFT:\n        new_head[1] -= 1\n    if next_key == curses.KEY_RIGHT:\n        new_head[1] += 1\n    \n    snake.insert(0, new_head)\n\n    # Check if the snake has gotten the food\n    if snake[0] == food:\n        food = None\n        while food is None:\n            nf = [\n                random.randint(1, sh-1),\n                random.randint(1, sw-1)\n            ]\n            food = nf if nf not in snake else None\n        w.addch(food[0], food[1], curses.ACS_PI)\n    else:\n        tail = snake.pop()\n        w.addch(int(tail[0]), int(tail[1]), ' ')\n    \n    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)\n"}
+
+QUERY PROMPT COST: 0.013900000000000001
+QUERY COMPLETION COST: 0.04416
+QUERY TOTAL COST: 0.05806
+
+Assistant: 
+```python
+# Import libraries
+import random
+import curses
+
+# Initialize the screen
+s = curses.initscr()
+curses.curs_set(0)
+sh, sw = s.getmaxyx()
+w = curses.newwin(sh, sw, 0, 0)
+w.keypad(1)
+w.timeout(100)
+
+# Snake initial position
+snk_x = sw//4
+snk_y = sh//2
+snake = [
+    [snk_y, snk_x],
+    [snk_y, snk_x-1],
+    [snk_y, snk_x-2]
+]
+
+# Food initial position
+food = [sh//2, sw//2]
+w.addch(int(food[0]), int(food[1]), curses.ACS_PI)
+
+# Initial direction
+key = curses.KEY_RIGHT
+
+# Function to get next key
+def get_next_key(current_key):
+    next_key = w.getch()
+    
+    # If no input is given, -1 is returned, and the snake keeps moving in the current direction
+    return current_key if next_key == -1 else next_key
+
+# Game loop
+while True:
+    next_key = get_next_key(key)
+
+    # Direction restrictions added to prevent snake from moving in the opposite direction
+    if next_key == curses.KEY_DOWN and key != curses.KEY_UP:
+        key = next_key
+    elif next_key == curses.KEY_UP and key != curses.KEY_DOWN:
+        key = next_key
+    elif next_key == curses.KEY_LEFT and key != curses.KEY_RIGHT:
+        key = next_key
+    elif next_key == curses.KEY_RIGHT and key != curses.KEY_LEFT:
+        key = next_key
+
+    if snake[0][0] in [0, sh] or \
+        snake[0][1]  in [0, sw] or \
+        snake[0] in snake[1:]:
+        curses.endwin()
+        quit()
+    
+    # Calculate the new head of the snake
+    new_head = [snake[0][0], snake[0][1]]
+    
+    # Update snake direction based on key
+    if key == curses.KEY_DOWN:
+        new_head[0] += 1
+    elif key == curses.KEY_UP:
+        new_head[0] -= 1
+    elif key == curses.KEY_LEFT:
+        new_head[1] -= 1
+    elif key == curses.KEY_RIGHT:
+        new_head[1] += 1
+    
+    snake.insert(0, new_head)
+
+    # Check if the snake has gotten the food
+    if snake[0] == food:
+        food = None
+        while food is None:
+            nf = [
+                random.randint(1, sh-1),
+                random.randint(1, sw-1)
+            ]
+            food = nf if nf not in snake else None
+        w.addch(food[0], food[1], curses.ACS_PI)
+    else:
+        tail = snake.pop()
+        w.addch(int(tail[0]), int(tail[1]), ' ')
+    
+    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)
+```
+
+The code above has been corrected by adding direction restrictions to the game loop. These changes prevent the snake from moving in the opposite direction it came from, which should fix the issue with the snake's movement.
+
+I will now write this updated code to the existing file.
+
+FUNCTION: write_file(**{'file_path': '/Users/andrewlucas/dev/aidev/experiments/coding_agents/snake_game/snake_game.py', 'content': "# Import libraries\nimport random\nimport curses\n\n# Initialize the screen\ns = curses.initscr()\ncurses.curs_set(0)\nsh, sw = s.getmaxyx()\nw = curses.newwin(sh, sw, 0, 0)\nw.keypad(1)\nw.timeout(100)\n\n# Snake initial position\nsnk_x = sw//4\nsnk_y = sh//2\nsnake = [\n    [snk_y, snk_x],\n    [snk_y, snk_x-1],\n    [snk_y, snk_x-2]\n]\n\n# Food initial position\nfood = [sh//2, sw//2]\nw.addch(int(food[0]), int(food[1]), curses.ACS_PI)\n\n# Initial direction\nkey = curses.KEY_RIGHT\n\n# Function to get next key\ndef get_next_key(current_key):\n    next_key = w.getch()\n    \n    # If no input is given, -1 is returned, and the snake keeps moving in the current direction\n    return current_key if next_key == -1 else next_key\n\n# Game loop\nwhile True:\n    next_key = get_next_key(key)\n\n    # Direction restrictions added to prevent snake from moving in the opposite direction\n    if next_key == curses.KEY_DOWN and key != curses.KEY_UP:\n        key = next_key\n    elif next_key == curses.KEY_UP and key != curses.KEY_DOWN:\n        key = next_key\n    elif next_key == curses.KEY_LEFT and key != curses.KEY_RIGHT:\n        key = next_key\n    elif next_key == curses.KEY_RIGHT and key != curses.KEY_LEFT:\n        key = next_key\n\n    if snake[0][0] in [0, sh] or \\\n        snake[0][1]  in [0, sw] or \\\n        snake[0] in snake[1:]:\n        curses.endwin()\n        quit()\n    \n    # Calculate the new head of the snake\n    new_head = [snake[0][0], snake[0][1]]\n    \n    # Update snake direction based on key\n    if key == curses.KEY_DOWN:\n        new_head[0] += 1\n    elif key == curses.KEY_UP:\n        new_head[0] -= 1\n    elif key == curses.KEY_LEFT:\n        new_head[1] -= 1\n    elif key == curses.KEY_RIGHT:\n        new_head[1] += 1\n    \n    snake.insert(0, new_head)\n\n    # Check if the snake has gotten the food\n    if snake[0] == food:\n        food = None\n        while food is None:\n            nf = [\n                random.randint(1, sh-1),\n                random.randint(1, sw-1)\n            ]\n            food = nf if nf not in snake else None\n        w.addch(food[0], food[1], curses.ACS_PI)\n    else:\n        tail = snake.pop()\n        w.addch(int(tail[0]), int(tail[1]), ' ')\n    \n    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)\n"}) -> {"success": true, "message": "Content written to file successfully"}
+
+QUERY PROMPT COST: 0.02888
+QUERY COMPLETION COST: 0.00041999999999999996
+QUERY TOTAL COST: 0.0293
+
+Assistant: 
+The Snake Game code has been fixed and updated in the file.
+
+QUERYING MODEL FOR MEMORY
+QUERY PROMPT COST: 0.0029860000000000004
+QUERY COMPLETION COST: 0.00026000000000000003
+QUERY TOTAL COST: 0.0032460000000000006
+
+Assistant: 
+I received a request to fix the code for the Snake Game script located in the "snake_game" directory. The existing Python script initializes the game environment, creates the snake and food, handles user input, and defines the game loop to control the movement and behavior of the snake and food. After reviewing the code, I found that the snake's movement was not being properly handled, as it always moved to the right even if other directional keys were pressed. I fixed the issue by adding direction restrictions to the game loop, preventing the snake from moving in the opposite direction it came from. The updated code was successfully written back to the existing file.
+
+MEMORY: I received a request to fix the code for the Snake Game script located in the "snake_game" directory. The existing Python script initializes the game environment, creates the snake and food, handles user input, and defines the game loop to control the movement and behavior of the snake and food. After reviewing the code, I found that the snake's movement was not being properly handled, as it always moved to the right even if other directional keys were pressed. I fixed the issue by adding direction restrictions to the game loop, preventing the snake from moving in the opposite direction it came from. The updated code was successfully written back to the existing file.
+STEP TOTAL COST: 0.106186
+You: Perfect, that works. Now update the game code so that the snake speeds-up every time it eats a piece of food.
+
+QUERY PROMPT COST: 0.00707
+QUERY COMPLETION COST: 0.0006
+QUERY TOTAL COST: 0.00767
+FUNCTION: find_file(**{'directory': 'snake_game', 'pattern': '*.py'}) -> {"success": true, "file_paths": ["/Users/andrewlucas/dev/aidev/experiments/coding_agents/snake_game/snake_game.py"]}
+
+QUERY PROMPT COST: 0.007690000000000001
+QUERY COMPLETION COST: 0.00108
+QUERY TOTAL COST: 0.00877
+FUNCTION: read_file(**{'file_path': '/Users/andrewlucas/dev/aidev/experiments/coding_agents/snake_game/snake_game.py'}) -> {"success": true, "content": "# Import libraries\nimport random\nimport curses\n\n# Initialize the screen\ns = curses.initscr()\ncurses.curs_set(0)\nsh, sw = s.getmaxyx()\nw = curses.newwin(sh, sw, 0, 0)\nw.keypad(1)\nw.timeout(100)\n\n# Snake initial position\nsnk_x = sw//4\nsnk_y = sh//2\nsnake = [\n    [snk_y, snk_x],\n    [snk_y, snk_x-1],\n    [snk_y, snk_x-2]\n]\n\n# Food initial position\nfood = [sh//2, sw//2]\nw.addch(int(food[0]), int(food[1]), curses.ACS_PI)\n\n# Initial direction\nkey = curses.KEY_RIGHT\n\n# Function to get next key\ndef get_next_key(current_key):\n    next_key = w.getch()\n    \n    # If no input is given, -1 is returned, and the snake keeps moving in the current direction\n    return current_key if next_key == -1 else next_key\n\n# Game loop\nwhile True:\n    next_key = get_next_key(key)\n\n    # Direction restrictions added to prevent snake from moving in the opposite direction\n    if next_key == curses.KEY_DOWN and key != curses.KEY_UP:\n        key = next_key\n    elif next_key == curses.KEY_UP and key != curses.KEY_DOWN:\n        key = next_key\n    elif next_key == curses.KEY_LEFT and key != curses.KEY_RIGHT:\n        key = next_key\n    elif next_key == curses.KEY_RIGHT and key != curses.KEY_LEFT:\n        key = next_key\n\n    if snake[0][0] in [0, sh] or \\\n        snake[0][1]  in [0, sw] or \\\n        snake[0] in snake[1:]:\n        curses.endwin()\n        quit()\n    \n    # Calculate the new head of the snake\n    new_head = [snake[0][0], snake[0][1]]\n    \n    # Update snake direction based on key\n    if key == curses.KEY_DOWN:\n        new_head[0] += 1\n    elif key == curses.KEY_UP:\n        new_head[0] -= 1\n    elif key == curses.KEY_LEFT:\n        new_head[1] -= 1\n    elif key == curses.KEY_RIGHT:\n        new_head[1] += 1\n    \n    snake.insert(0, new_head)\n\n    # Check if the snake has gotten the food\n    if snake[0] == food:\n        food = None\n        while food is None:\n            nf = [\n                random.randint(1, sh-1),\n                random.randint(1, sw-1)\n            ]\n            food = nf if nf not in snake else None\n        w.addch(food[0], food[1], curses.ACS_PI)\n    else:\n        tail = snake.pop()\n        w.addch(int(tail[0]), int(tail[1]), ' ')\n    \n    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)\n"}
+
+QUERY PROMPT COST: 0.01543
+QUERY COMPLETION COST: 0.026789999999999998
+QUERY TOTAL COST: 0.042219999999999994
+
+Assistant: 
+The update needs to modify the game loop to increase the speed of the snake each time it eats a piece of food. I will do this by:
+
+1. Adding a variable to keep track of the snake's speed.
+2. Modifying the timeout of the game window (which controls how often the screen refreshes) each time the snake eats a piece of food.
+
+Now, I will implement these changes in the game loop section of the code.
+
+FUNCTION: write_file(**{'file_path': '/Users/andrewlucas/dev/aidev/experiments/coding_agents/snake_game/snake_game.py', 'content': "# Import libraries\nimport random\nimport curses\n\n# Initialize the screen\ns = curses.initscr()\ncurses.curs_set(0)\nsh, sw = s.getmaxyx()\nw = curses.newwin(sh, sw, 0, 0)\nw.keypad(1)\nw.timeout(100)\n\n# Snake initial position\nsnk_x = sw//4\nsnk_y = sh//2\nsnake = [\n    [snk_y, snk_x],\n    [snk_y, snk_x-1],\n    [snk_y, snk_x-2]\n]\n\n# Food initial position\nfood = [sh//2, sw//2]\nw.addch(int(food[0]), int(food[1]), curses.ACS_PI)\n\n# Initial direction\nkey = curses.KEY_RIGHT\n\n# Initial snake speed\nspeed = 100\n\n# Function to get next key\ndef get_next_key(current_key):\n    next_key = w.getch()\n    \n    # If no input is given, -1 is returned, and the snake keeps moving in the current direction\n    return current_key if next_key == -1 else next_key\n\n# Game loop\nwhile True:\n    next_key = get_next_key(key)\n\n    # Direction restrictions added to prevent snake from moving in the opposite direction\n    if next_key == curses.KEY_DOWN and key != curses.KEY_UP:\n        key = next_key\n    elif next_key == curses.KEY_UP and key != curses.KEY_DOWN:\n        key = next_key\n    elif next_key == curses.KEY_LEFT and key != curses.KEY_RIGHT:\n        key = next_key\n    elif next_key == curses.KEY_RIGHT and key != curses.KEY_LEFT:\n        key = next_key\n\n    if snake[0][0] in [0, sh] or \\\n        snake[0][1]  in [0, sw] or \\\n        snake[0] in snake[1:]:\n        curses.endwin()\n        quit()\n    \n    # Calculate the new head of the snake\n    new_head = [snake[0][0], snake[0][1]]\n    \n    # Update snake direction based on key\n    if key == curses.KEY_DOWN:\n        new_head[0] += 1\n    elif key == curses.KEY_UP:\n        new_head[0] -= 1\n    elif key == curses.KEY_LEFT:\n        new_head[1] -= 1\n    elif key == curses.KEY_RIGHT:\n        new_head[1] += 1\n    \n    snake.insert(0, new_head)\n\n    # Check if the snake has gotten the food\n    if snake[0] == food:\n        food = None\n        while food is None:\n            nf = [\n                random.randint(1, sh-1),\n                random.randint(1, sw-1)\n            ]\n            food = nf if nf not in snake else None\n        w.addch(food[0], food[1], curses.ACS_PI)\n        # Increase snake speed\n        speed = max(10, speed - 10)\n         w.timeout(speed)\n    else:\n        tail = snake.pop()\n        w.addch(int(tail[0]), int(tail[1]), ' ')\n    \n    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)\n"}) -> {"success": true, "message": "Content written to file successfully"}
+
+QUERY PROMPT COST: 0.024560000000000002
+QUERY COMPLETION COST: 0.0010500000000000002
+QUERY TOTAL COST: 0.02561
+
+Assistant: 
+I have updated the Snake Game code to make the snake speed-up every time it eats a piece of food. This change has been successfully written back to the existing file.
+
+QUERYING MODEL FOR MEMORY
+QUERY PROMPT COST: 0.0025540000000000003
+QUERY COMPLETION COST: 0.000124
+QUERY TOTAL COST: 0.0026780000000000003
+
+Assistant: 
+I updated the Snake Game code to increase the snake's speed every time it consumes a piece of food. This was achieved by introducing a speed variable and modifying the timeout value of the game window whenever the snake eats food. The updated code was written back to the existing file, and the modification was successful.
+
+MEMORY: I updated the Snake Game code to increase the snake's speed every time it consumes a piece of food. This was achieved by introducing a speed variable and modifying the timeout value of the game window whenever the snake eats food. The updated code was written back to the existing file, and the modification was successful.
+STEP TOTAL COST: 0.08694799999999998
+You: Running the script yielded the following error: IndentationError: unexpected indent on line 86 of snake_game/snake_game.py
+
+QUERY PROMPT COST: 0.0064
+QUERY COMPLETION COST: 0.0006
+QUERY TOTAL COST: 0.007
+FUNCTION: read_file(**{'file_path': 'snake_game/snake_game.py'}) -> {"success": true, "content": "# Import libraries\nimport random\nimport curses\n\n# Initialize the screen\ns = curses.initscr()\ncurses.curs_set(0)\nsh, sw = s.getmaxyx()\nw = curses.newwin(sh, sw, 0, 0)\nw.keypad(1)\nw.timeout(100)\n\n# Snake initial position\nsnk_x = sw//4\nsnk_y = sh//2\nsnake = [\n    [snk_y, snk_x],\n    [snk_y, snk_x-1],\n    [snk_y, snk_x-2]\n]\n\n# Food initial position\nfood = [sh//2, sw//2]\nw.addch(int(food[0]), int(food[1]), curses.ACS_PI)\n\n# Initial direction\nkey = curses.KEY_RIGHT\n\n# Initial snake speed\nspeed = 100\n\n# Function to get next key\ndef get_next_key(current_key):\n    next_key = w.getch()\n    \n    # If no input is given, -1 is returned, and the snake keeps moving in the current direction\n    return current_key if next_key == -1 else next_key\n\n# Game loop\nwhile True:\n    next_key = get_next_key(key)\n\n    # Direction restrictions added to prevent snake from moving in the opposite direction\n    if next_key == curses.KEY_DOWN and key != curses.KEY_UP:\n        key = next_key\n    elif next_key == curses.KEY_UP and key != curses.KEY_DOWN:\n        key = next_key\n    elif next_key == curses.KEY_LEFT and key != curses.KEY_RIGHT:\n        key = next_key\n    elif next_key == curses.KEY_RIGHT and key != curses.KEY_LEFT:\n        key = next_key\n\n    if snake[0][0] in [0, sh] or \\\n        snake[0][1]  in [0, sw] or \\\n        snake[0] in snake[1:]:\n        curses.endwin()\n        quit()\n    \n    # Calculate the new head of the snake\n    new_head = [snake[0][0], snake[0][1]]\n    \n    # Update snake direction based on key\n    if key == curses.KEY_DOWN:\n        new_head[0] += 1\n    elif key == curses.KEY_UP:\n        new_head[0] -= 1\n    elif key == curses.KEY_LEFT:\n        new_head[1] -= 1\n    elif key == curses.KEY_RIGHT:\n        new_head[1] += 1\n    \n    snake.insert(0, new_head)\n\n    # Check if the snake has gotten the food\n    if snake[0] == food:\n        food = None\n        while food is None:\n            nf = [\n                random.randint(1, sh-1),\n                random.randint(1, sw-1)\n            ]\n            food = nf if nf not in snake else None\n        w.addch(food[0], food[1], curses.ACS_PI)\n        # Increase snake speed\n        speed = max(10, speed - 10)\n         w.timeout(speed)\n    else:\n        tail = snake.pop()\n        w.addch(int(tail[0]), int(tail[1]), ' ')\n    \n    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)\n"}
+
+QUERY PROMPT COST: 0.01434
+QUERY COMPLETION COST: 0.023399999999999997
+QUERY TOTAL COST: 0.037739999999999996
+FUNCTION: write_file(**{'file_path': 'snake_game/snake_game.py', 'content': "# Import libraries\nimport random\nimport curses\n\n# Initialize the screen\ns = curses.initscr()\ncurses.curs_set(0)\nsh, sw = s.getmaxyx()\nw = curses.newwin(sh, sw, 0, 0)\nw.keypad(1)\nw.timeout(100)\n\n# Snake initial position\nsnk_x = sw//4\nsnk_y = sh//2\nsnake = [\n    [snk_y, snk_x],\n    [snk_y, snk_x-1],\n    [snk_y, snk_x-2]\n]\n\n# Food initial position\nfood = [sh//2, sw//2]\nw.addch(int(food[0]), int(food[1]), curses.ACS_PI)\n\n# Initial direction\nkey = curses.KEY_RIGHT\n\n# Initial snake speed\nspeed = 100\n\n# Function to get next key\ndef get_next_key(current_key):\n    next_key = w.getch()\n    \n    # If no input is given, -1 is returned, and the snake keeps moving in the current direction\n    return current_key if next_key == -1 else next_key\n\n# Game loop\nwhile True:\n    next_key = get_next_key(key)\n\n    # Direction restrictions added to prevent snake from moving in the opposite direction\n    if next_key == curses.KEY_DOWN and key != curses.KEY_UP:\n        key = next_key\n    elif next_key == curses.KEY_UP and key != curses.KEY_DOWN:\n        key = next_key\n    elif next_key == curses.KEY_LEFT and key != curses.KEY_RIGHT:\n        key = next_key\n    elif next_key == curses.KEY_RIGHT and key != curses.KEY_LEFT:\n        key = next_key\n\n    if snake[0][0] in [0, sh] or \\\n        snake[0][1]  in [0, sw] or \\\n        snake[0] in snake[1:]:\n        curses.endwin()\n        quit()\n    \n    # Calculate the new head of the snake\n    new_head = [snake[0][0], snake[0][1]]\n    \n    # Update snake direction based on key\n    if key == curses.KEY_DOWN:\n        new_head[0] += 1\n    elif key == curses.KEY_UP:\n        new_head[0] -= 1\n    elif key == curses.KEY_LEFT:\n        new_head[1] -= 1\n    elif key == curses.KEY_RIGHT:\n        new_head[1] += 1\n    \n    snake.insert(0, new_head)\n\n    # Check if the snake has gotten the food\n    if snake[0] == food:\n        food = None\n        while food is None:\n            nf = [\n                random.randint(1, sh-1),\n                random.randint(1, sw-1)\n            ]\n            food = nf if nf not in snake else None\n        w.addch(food[0], food[1], curses.ACS_PI)\n        # Increase snake speed\n        speed = max(10, speed - 10)\n        w.timeout(speed)\n    else:\n        tail = snake.pop()\n        w.addch(int(tail[0]), int(tail[1]), ' ')\n    \n    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)\n"}) -> {"success": true, "message": "Content written to file successfully"}
+
+QUERY PROMPT COST: 0.02237
+QUERY COMPLETION COST: 0.0009599999999999999
+QUERY TOTAL COST: 0.02333
+
+Assistant: 
+The indentation error on line 86 of snake_game/snake_game.py has been fixed, and the updated code has been written back to the file successfully.
+
+QUERYING MODEL FOR MEMORY
+QUERY PROMPT COST: 0.002335
+QUERY COMPLETION COST: 0.000152
+QUERY TOTAL COST: 0.0024869999999999996
+
+Assistant: 
+I received a request to fix an error in the Snake Game code. The error was an IndentationError on line 86 of the snake_game.py file. I read the content of the file, found the error in the code, and then rewrote the corrected code to the same file. The update was successful, and the file was written back without any issues.
+
+MEMORY: I received a request to fix an error in the Snake Game code. The error was an IndentationError on line 86 of the snake_game.py file. I read the content of the file, found the error in the code, and then rewrote the corrected code to the same file. The update was successful, and the file was written back without any issues.
+STEP TOTAL COST: 0.070557
+You: quit
+(venv) andrewlucas@Andrews-MBP coding_agents %

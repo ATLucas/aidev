@@ -1,6 +1,6 @@
 # Your Memory
 
-The following is your condensed conversation memory:
+The following is your condensed conversation memory. Use it to help fulfill the user's request.
 
 {memory}
 
