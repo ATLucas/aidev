@@ -1,5 +1,5 @@
-# from coding_agents.agents.agent_latent_space import Agent
-from coding_agents.agents.agent_assistants_api import Agent
+from coding_agents.agents.agent_latent_space import AgentLatentSpace
+from coding_agents.agents.agent_assistants_api import AgentAssistantsApi
 from coding_agents.utils import (
     ConsoleColor,
     ModelType,
@@ -16,7 +16,7 @@ MODEL = ModelType.GPT_4_turbo
 
 def main():
     validate_openai_version()
-    coder_agent = Agent(
+    coder_agent = AgentLatentSpace(
         instructions=read_txt_config("coder_agent/instructions.md"),
         tools=read_yaml_config("coder_agent/tools.yaml"),
         actions=get_available_actions("coding_agents.actions"),

@@ -1,21 +1,20 @@
 # External
 import json
-from openai import OpenAI
 import os
 from typing import Callable, Dict, List, Optional
 
 # Internal
+from coding_agents.agents.agent_interface import AgentInterface
 from coding_agents.utils import (
     DEBUG,
     MODEL_PRICING,
     ConsoleColor,
     ModelType,
-    generate_agent_id,
     read_txt_config,
 )
 
 
-class Agent:
+class AgentLatentSpace(AgentInterface):
     def __init__(
         self,
         instructions: str,
@@ -24,30 +23,22 @@ class Agent:
         model: Optional[ModelType] = None,
         agent_id: Optional[str] = None,
     ):
-        self._instructions = instructions
-        self._tools = tools
-        self._actions = actions
-        self._model = model  # Not used currently
+        super().__init__(instructions, tools, actions, model, agent_id)
         self._user_prompt = read_txt_config("agent/user_prompt.md")
         self._memory_prompt = read_txt_config("agent/memory_prompt.md")
-        self._client = OpenAI()
-
-        if agent_id is None:
-            self._id = generate_agent_id()
-            os.makedirs(f"agents_data/{self._id}", exist_ok=True)
-
+        self._memory_data_file = f"{self._agent_data_dir}/memory.md"
         self._memory = self._read_memory()
 
     def perform_step(self, model: ModelType, user_request: str):
         total_cost = 0
+        self._log_chat(f"MEMORY: {self._memory}\n")
+        self._log_chat(f"USER: {user_request}\n")
+        user_message_content = self._user_prompt.format(
+            memory=self._memory, user_request=user_request
+        )
         messages = [
             {"role": "system", "content": self._instructions},
-            {
-                "role": "user",
-                "content": self._user_prompt.format(
-                    memory=self._memory, user_request=user_request
-                ),
-            },
+            {"role": "user", "content": user_message_content},
         ]
 
         # Query model
@@ -76,6 +67,9 @@ class Agent:
         # Query model for updated memory content
         if DEBUG:
             print("QUERYING MODEL FOR MEMORY")
+
+        # Always use GPT_3_5_turbo to generate the memory,
+        # since it is a relatively simple summarization task.
         response_message, cost = self._query_model(ModelType.GPT_3_5_turbo, messages)
         total_cost += cost
 
@@ -86,23 +80,22 @@ class Agent:
         if self._memory:
             self._record_memory(self._memory)
 
-        if DEBUG:
-            print(f"STEP TOTAL COST: {total_cost}")
+        log_content = f"STEP TOTAL COST: {total_cost}\n"
+        self._log_chat(log_content)
+        print(log_content)
 
-    def _read_memory(self):
+    def _read_memory(self) -> str:
         """
         Reads the memory of an AI agent from a file. If the file doesn't exist,
         a default memory string is used.
 
         :return: A string containing the AI agent's memory.
         """
-        file_path = f"agents_data/{self._id}/memory.md"
         default_memory = "This is the start of the conversation."
 
         try:
-            # Check if the file exists
-            if os.path.exists(file_path):
-                with open(file_path, "r") as file:
+            if os.path.exists(self._memory_data_file):
+                with open(self._memory_data_file, "r") as file:
                     return file.read()
             else:
                 return default_memory
@@ -115,18 +108,9 @@ class Agent:
         Records the memory of an AI agent to a file.
 
         :param memory: A string containing the AI agent's memory.
-        :return: A JSON string with the operation result.
         """
         self._memory = memory
-
-        directory = f"agents_data/{self._id}"
-        file_path = f"{directory}/memory.md"
-
-        # Create directory if it doesn't exist
-        os.makedirs(directory, exist_ok=True)
-
-        # Write memory to file
-        with open(file_path, "w") as file:
+        with open(self._memory_data_file, "w") as file:
             file.write(memory)
 
     def _query_model(self, model: ModelType, messages: List[Dict[str, str]]):
@@ -145,14 +129,17 @@ class Agent:
             response.usage.completion_tokens * MODEL_PRICING[model]["completion"] / 1000
         )
         total_cost = prompt_cost + completion_cost
-        if DEBUG:
-            print(f"QUERY PROMPT COST: {prompt_cost}")
-            print(f"QUERY COMPLETION COST: {completion_cost}")
-            print(f"QUERY TOTAL COST: {total_cost}")
+        for log_content in (
+            f"QUERY PROMPT COST: {prompt_cost}\n",
+            f"QUERY COMPLETION COST: {completion_cost}\n",
+            f"QUERY COST: {total_cost}\n",
+        ):
+            self._log_chat(log_content)
+            print(log_content)
         if response_message.content:
-            print(
-                f"\n{ConsoleColor.GREEN.value}Assistant: \n{response_message.content}{ConsoleColor.ENDCOLOR.value}\n"
-            )
+            log_content = f"ASSISTANT: {response_message.content}\n"
+            self._log_chat(log_content)
+            print(self._add_color(log_content, ConsoleColor.GREEN))
         return response_message, total_cost
 
     def _perform_action(self, tool_call):
@@ -166,8 +153,9 @@ class Agent:
             "name": function_name,
             "content": function_response,
         }
-        if DEBUG:
-            print(
-                f"{ConsoleColor.CYAN.value}FUNCTION: {function_name}(**{function_args}) -> {function_response}{ConsoleColor.ENDCOLOR.value}\n"
-            )
+        log_content = (
+            f"FUNCTION: {function_name}({function_args}) -> {function_response}\n"
+        )
+        self._log_chat(log_content)
+        print(self._add_color(log_content, ConsoleColor.CYAN))
         return action_response_message

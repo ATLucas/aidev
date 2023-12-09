@@ -1,15 +1,16 @@
 # External
+from datetime import datetime
 import json
-from openai import OpenAI
 import os
 import time
 from typing import Callable, Dict, Optional
 
 # Internal
-from coding_agents.utils import DEBUG, ConsoleColor, ModelType, generate_agent_id
+from coding_agents.agents.agent_interface import AgentInterface
+from coding_agents.utils import DEBUG, ConsoleColor, ModelType
 
 
-class Agent:
+class AgentAssistantsApi(AgentInterface):
     def __init__(
         self,
         instructions: str,
@@ -18,36 +19,30 @@ class Agent:
         model: Optional[ModelType] = None,
         agent_id: Optional[str] = None,
     ):
-        self._instructions = instructions
-        self._tools = tools
-        self._actions = actions
-        self._model = model
-        self._client = OpenAI()
+        super().__init__(instructions, tools, actions, model, agent_id)
+        assistant_id_file = f"{self._agent_data_dir}/assistant_id.txt"
 
-        self._id = generate_agent_id() if agent_id is None else agent_id
-        agent_data_dir = f"agents_data/{self._id}"
-        assistant_id_file = f"{agent_data_dir}/assistant_id.txt"
-
-        if agent_id is None:
-            print("Creating new assistant")
-            self._assistant = self._client.beta.assistants.create(
-                name=self._id,
-                instructions=instructions,
-                tools=tools,
-                model=self._model.value,  # Overridden in perform_step
-            )
-            self._assistant_id = self._assistant.id
-            os.makedirs(agent_data_dir, exist_ok=True)
-            with open(assistant_id_file, "w") as out_file:
-                out_file.write(f"{self._assistant.id}")
-        else:
+        if os.path.exists(assistant_id_file):
             print("Loading existing assistant")
             with open(assistant_id_file) as in_file:
                 self._assistant_id = in_file.read()
+        else:
+            print("Creating new assistant")
+            self._assistant = self._client.beta.assistants.create(
+                name=self._id,
+                instructions=self._instructions,
+                tools=self._tools,
+                model=self._model.value,  # Overridden in perform_step
+            )
+            self._assistant_id = self._assistant.id
+
+            with open(assistant_id_file, "w") as out_file:
+                out_file.write(f"{self._assistant.id}")
 
         self._thread = self._client.beta.threads.create()
 
     def perform_step(self, model: ModelType, user_request: str):
+        self._log_chat(f"USER: {user_request}\n")
         message = self._client.beta.threads.messages.create(
             thread_id=self._thread.id,
             role="user",
@@ -85,8 +80,8 @@ class Agent:
                 run_id=run.id,
             )
             time.sleep(0.5)
-        # if DEBUG:
-        #     show_json(run)
+        if DEBUG:
+            show_json(run)
         self._print_new_messages()
         return run
 
@@ -95,10 +90,9 @@ class Agent:
             thread_id=self._thread.id, order="asc", after=self._previous_message_id
         )
         for message in messages:
-            print(
-                f"{ConsoleColor.GREEN.value}{message.role.upper()}: "
-                f"{message.content[0].text.value}{ConsoleColor.ENDCOLOR.value}\n"
-            )
+            log_content = f"{message.role.upper()}: {message.content[0].text.value}\n"
+            self._log_chat(log_content)
+            print(self._add_color(log_content, ConsoleColor.GREEN))
             self._previous_message_id = message.id
 
     def _perform_action(self, tool_call):
@@ -110,11 +104,11 @@ class Agent:
             "tool_call_id": tool_call.id,
             "output": function_response,
         }
-        if DEBUG:
-            print(
-                f"{ConsoleColor.CYAN.value}FUNCTION: {function_name}(**{function_args}) "
-                f"-> {function_response}{ConsoleColor.ENDCOLOR.value}\n"
-            )
+        log_content = (
+            f"FUNCTION: {function_name}({function_args}) -> {function_response}\n"
+        )
+        self._log_chat(log_content)
+        print(self._add_color(log_content, ConsoleColor.CYAN))
         return action_response_message
 
 

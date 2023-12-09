@@ -12,7 +12,7 @@ from typing import Dict
 import yaml
 
 REQUIRED_OPENAI_VERSION = "1.2.3"
-DEBUG = True
+DEBUG = False
 
 
 class ConsoleColor(Enum):
