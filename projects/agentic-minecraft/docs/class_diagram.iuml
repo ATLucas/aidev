@@ -1,0 +1,65 @@
+@startuml Agentic Minecraft Classes
+skinparam style strictuml
+
+class "Minecraft Environment" as Environment {}
+
+class "Server" {}
+
+class "Agent" {
+    +sensoryState: SensoryState
+    +policyState: PolicyState
+    +currentPolicy: Policy
+    +senseEnvironment()
+    +choosePolicy()
+    +applyPolicy()
+}
+
+class "Sensory State" as SensoryState {
+    -isHungry: boolean
+    -mobNearby: boolean
+    -isNight: boolean
+    -isGettingLate: boolean
+    +updateState()
+}
+
+class "Policy State" as PolicyState {
+    #internalState: Map<String, Object>
+    +updateState()
+    +resetState()
+}
+
+class "Action Interface" as ActionInterface {
+    +setMoveTarget()
+    +setMineTarget()
+}
+
+abstract class "Policy Interface" as PolicyInterface {
+    +applyPolicy(sensoryState: SensoryState, policyState: PolicyState)
+}
+
+class "Harvest Wood Policy" as HarvestWoodPolicy {
+    +applyPolicy(sensoryState: SensoryState, policyState: PolicyState)
+}
+
+class "Combat Policy" as CombatPolicy {
+    +applyPolicy(sensoryState: SensoryState, policyState: PolicyState)
+}
+
+class "Exploration Policy" as ExplorationPolicy {
+    +applyPolicy(sensoryState: SensoryState, policyState: PolicyState)
+}
+
+Server --> Agent : spawns agent
+Environment <-- Agent : polls for data
+Agent *--> SensoryState : has
+Agent *--> PolicyState : has
+Agent o--> PolicyInterface : uses
+PolicyInterface <|-- HarvestWoodPolicy : implements
+PolicyInterface <|-- CombatPolicy : implements
+PolicyInterface <|-- ExplorationPolicy : implements
+HarvestWoodPolicy o--> ActionInterface : uses
+CombatPolicy o--> ActionInterface : uses
+ExplorationPolicy o--> ActionInterface : uses
+ActionInterface --> Environment : executes actions
+
+@enduml
