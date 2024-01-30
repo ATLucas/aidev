@@ -1,0 +1,22 @@
+@startuml Agentic Minecraft Sequences
+skinparam style strictuml
+
+Participant "Minecraft Environment" as Environment
+Participant "Agent" as Agent
+Participant "Sensory State" as SensoryState
+Participant "Policy State" as PolicyState
+
+== Sensing Phase ==
+Environment -> Agent : Sends environmental data
+Agent -> SensoryState : Updates with new data
+
+== Policy Selection Phase ==
+SensoryState -> Agent : Evaluate if state change justifies a policy change
+Agent -> Agent : Select best policy (if required)
+
+== Policy Application Phase ==
+Agent -> PolicyState : Updates policy state based on sensory state
+PolicyState -> Agent : Chooses actions based on policy state (if any action is required)
+Agent -> Environment : Executes actions
+
+@enduml
