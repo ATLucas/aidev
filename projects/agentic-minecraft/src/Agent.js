@@ -39,7 +39,7 @@ class Agent {
      * Chooses the best policy for the agent to act upon based on its current sensory state.
      */
     choosePolicy() {
-        if (this.sensoryState.isNight) {
+        if (this.sensoryState.isNight || this.sensoryState.mobNearby) {
             this.currentPolicy = new SurvivalPolicy();
         } else if (this.sensoryState.isHungry) {
             this.currentPolicy = new FindFoodPolicy();
