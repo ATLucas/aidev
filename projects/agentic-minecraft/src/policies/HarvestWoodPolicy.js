@@ -14,4 +14,4 @@ class HarvestWoodPolicy {
     }
 }
 
-module.exports = HarvestWoodPolicy;
+export default HarvestWoodPolicy;

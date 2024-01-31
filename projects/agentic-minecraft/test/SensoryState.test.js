@@ -1,5 +1,5 @@
-const assert = require('assert');
-import SensoryState from '../src/SensoryState';
+import assert from 'assert';
+import SensoryState from '../src/SensoryState.js';
 
 describe('SensoryState', function() {
     describe('#updateState()', function() {

@@ -1,6 +1,5 @@
-import chai from 'chai';
-const expect = chai.expect;
-import PolicyState from '../src/PolicyState';
+import { expect } from 'chai';
+import PolicyState from '../src/PolicyState.js'; // Adjust the path as per your project structure
 
 describe('PolicyState', function() {
     describe('#updateState()', function() {

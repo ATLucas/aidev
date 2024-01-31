@@ -30,4 +30,4 @@ class SensoryState {
     }
 }
 
-module.exports = SensoryState;
+export default SensoryState;

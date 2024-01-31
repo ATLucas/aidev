@@ -1,9 +1,9 @@
-const SensoryState = require('./SensoryState');
-const PolicyState = require('./PolicyState');
+import SensoryState from './SensoryState.js';
+import PolicyState from'./PolicyState.js';
 // Placeholder policy imports
-const SurvivalPolicy = require('./policies/SurvivalPolicy');
-const FindFoodPolicy = require('./policies/FindFoodPolicy');
-const DefaultPolicy = require('./policies/DefaultPolicy'); // A default policy for normal conditions
+import SurvivalPolicy from'./policies/SurvivalPolicy.js';
+import FindFoodPolicy from'./policies/FindFoodPolicy.js';
+import DefaultPolicy from'./policies/DefaultPolicy.js';
 
 /**
  * The Agent class represents an entity in the Minecraft environment capable of sensing the environment,
@@ -65,4 +65,4 @@ class Agent {
     }
 }
 
-module.exports = Agent;
+export default Agent;

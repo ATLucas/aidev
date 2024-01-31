@@ -14,9 +14,8 @@ class PolicyState {
      * @param {Object} actionOutcome - Data about the result of an action taken by the agent
      */
     updateState(actionOutcome) {
-        // Placeholder for future implementation
-        // Update the internalState based on actionOutcome
-        // Example: this.internalState.set('lastAction', actionOutcome);
+        this.internalState.set('action', actionOutcome.action);
+        this.internalState.set('result', actionOutcome.result);
     }
 
     /**
@@ -27,4 +26,4 @@ class PolicyState {
     }
 }
 
-module.exports = PolicyState;
+export default PolicyState;
