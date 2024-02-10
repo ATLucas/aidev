@@ -8,7 +8,7 @@ Generates javascript functions for new Minecraft bot skills, as described in the
 
 ---------- Link ----------
 
-
+https://chat.openai.com/g/g-WbCwJ8GKi-voyager-skill-coder
 
 ---------- Instructions ----------
 
