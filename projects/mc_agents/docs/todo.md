@@ -1,0 +1,3 @@
+
+- Spawn bots
+- Create curriculum

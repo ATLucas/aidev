@@ -1,7 +1,14 @@
 from time import time
 import datetime
 
-future = int(1703650500000) / 1000
+# Instructions:
+#     - append `?format=json`
+#     - search "scheduledPublishAt"
+#     - copy the value
+#     - paste below
+#     - `python story_publish_time.py`
+
+future = int(1707408900000) / 1000
 present = int(time())
 totsec = future - present
 secs = str(int(totsec % 60))
