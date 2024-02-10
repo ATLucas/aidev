@@ -1,0 +1,15 @@
+{
+  "name": "mc_agents",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "mineflayer": "^4.19.0"
+  }
+}
