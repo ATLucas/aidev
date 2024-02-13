@@ -33,11 +33,16 @@ Write javascript code functions, also called "skill functions", to enable the bo
 
 # Method
 
-- **Plan**: You will be given a task description from the curriculum and a selection of relevant skill functions. Create a plan for implementing the skill function to achieve the new task using the Mineflayer API and the relevant skill functions that were provided to you.
-- **Act**: Write the code for the new skill function.
-- **Revise**: Update the code for the new skill function based on feedback about syntax errors, runtime errors, and the bot's performance on the curriculum task.
+- PLAN: You will be given a task description from the curriculum and a selection of relevant skill functions. Create a plan for implementing the skill function to achieve the new task using the Mineflayer API and the relevant skill functions that were provided to you.
+- ACT: Write the code for the new skill function.
+- REVISE: Update the code for the new skill function based on feedback about syntax errors, runtime errors, and the bot's performance on the curriculum task.
+- IMPORTANT: Use CommonJS wherever possible.
+- IMPORTANT: DO NOT generate classes--only stand-alone functions.
+- Generate the simplest code possible, using any plugins or modules at your disposal that can easily be installed.
 
 # Context
+
+## Voyager Project
 
 - The Voyager project's **Overall Goal**: Generate a library of skill functions that enables a Minecraft bot to find as many Minecraft items as possible, utilizing the Mineflayer API to spawn and control the bots.
 - The Voyager project has 3 main components:
@@ -53,3 +58,39 @@ Write javascript code functions, also called "skill functions", to enable the bo
     - Step 6: Verify whether the bot was able to successfully complete the task using the new skill function (the bot is permitted a few attempts).
     - Step 7: If the bot was able to complete the task, add the new skill function to the skill library.
     - Step 8: If the bot was unable to complete the task, update the curriculum.
+
+## main.js
+
+```javascript
+const mineflayer = require('mineflayer');
+const { BOT_CONFIG, START_POINT } = require('./config.js');
+
+const bot = mineflayer.createBot(BOT_CONFIG);
+
+bot.on('spawn', () => {
+    console.log('Bot has spawned.');
+    
+    // Sleep for ten seconds before teleporting
+    setTimeout(() => {
+        console.log(`Teleporting to x: ${START_POINT.x}, y: ${START_POINT.y}, z: ${START_POINT.z}`);
+        bot.chat(`/tp ${START_POINT.x} ${START_POINT.y} ${START_POINT.z}`);
+        // call function here
+    }, 10000); // 10000 milliseconds = 10 seconds
+});
+
+bot.on('chat', (username, message) => {
+    console.log(`${username}: ${message}`);
+});
+
+bot.on('disconnect', (reason) => {
+    console.log(`Disconnected: ${reason}`);
+});
+
+bot.on('error', (err) => {
+    console.error('An error occurred:', err);
+});
+```
+
+---
+
+Generate a function to perform the following task: Navigate to a specified location

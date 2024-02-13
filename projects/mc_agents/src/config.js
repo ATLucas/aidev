@@ -1,7 +1,7 @@
-export const MINECRAFT_HOST = "localhost";
-export const MINECRAFT_PORT = "3001";
+const MINECRAFT_HOST = "localhost";
+const MINECRAFT_PORT = "3001";
 
-export const BOT_CONFIG = {
+const BOT_CONFIG = {
     username: "ALPHA",
     address: MINECRAFT_HOST,
     port: MINECRAFT_PORT,
@@ -9,5 +9,12 @@ export const BOT_CONFIG = {
     viewDistance: "tiny",
 };
 
-export const START_POINT = { x: 320, y: 68, z: -13 }; // Forest
-// export const START_POINT = { x: 256, y: 63, z: 6 }; // Beach
+const START_POINT = { x: 320, y: 68, z: -13 }; // Forest
+// const START_POINT = { x: 256, y: 63, z: 6 }; // Beach
+
+module.exports = {
+    MINECRAFT_HOST,
+    MINECRAFT_PORT,
+    BOT_CONFIG,
+    START_POINT,
+};
