@@ -63,18 +63,26 @@ Write javascript code functions, also called "skill functions", to enable the bo
 
 ```javascript
 const mineflayer = require('mineflayer');
+const { pathfinder, Movements } = require('mineflayer-pathfinder');
 const { BOT_CONFIG, START_POINT } = require('./config.js');
+// Import function here
 
 const bot = mineflayer.createBot(BOT_CONFIG);
 
 bot.on('spawn', () => {
     console.log('Bot has spawned.');
+
+    bot.loadPlugin(pathfinder);
+    
+    const defaultMove = new Movements(bot, require('minecraft-data')(bot.version));
+    bot.pathfinder.setMovements(defaultMove);
     
     // Sleep for ten seconds before teleporting
     setTimeout(() => {
         console.log(`Teleporting to x: ${START_POINT.x}, y: ${START_POINT.y}, z: ${START_POINT.z}`);
         bot.chat(`/tp ${START_POINT.x} ${START_POINT.y} ${START_POINT.z}`);
-        // call function here
+        
+        // Call function here
     }, 10000); // 10000 milliseconds = 10 seconds
 });
 
