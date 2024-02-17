@@ -8,8 +8,8 @@
   },
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
-    "mineflayer": "^4.19.0"
+    "mineflayer": "^4.19.0",
+    "mineflayer-pathfinder": "^2.4.5"
   }
 }
