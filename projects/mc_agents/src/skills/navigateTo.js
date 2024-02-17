@@ -1,3 +1,5 @@
+// navigateTo.js located in ./skills
+
 const { goals: { GoalBlock } } = require('mineflayer-pathfinder');
 
 function navigateTo(bot, target) {

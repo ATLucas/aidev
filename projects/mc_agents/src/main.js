@@ -1,7 +1,8 @@
 const mineflayer = require('mineflayer');
 const { pathfinder, Movements } = require('mineflayer-pathfinder');
 const { BOT_CONFIG, START_POINT } = require('./config.js');
-const { navigateTo } = require('./skills/navigateTo.js');
+const { gatherResource } = require('./skills/gatherResource.js');
+
 
 const bot = mineflayer.createBot(BOT_CONFIG);
 
@@ -13,18 +14,18 @@ bot.on('spawn', () => {
     
     const defaultMove = new Movements(bot, require('minecraft-data')(bot.version));
     bot.pathfinder.setMovements(defaultMove);
-    
-    // Sleep for ten seconds before teleporting
-    setTimeout(() => {
-        bot.chat(`/tp ${START_POINT.x} ${START_POINT.y} ${START_POINT.z}`);
-        
-        const targetLocation = { x: 100, y: 64, z: 50 };
-        navigateTo(bot, targetLocation);
-    }, 10000); // 10000 milliseconds = 10 seconds
+
+    // Teleport to the starting point
+    bot.chat(`/tp ${START_POINT.x} ${START_POINT.y} ${START_POINT.z}`);
 });
 
-bot.on('chat', (username, message) => {
+bot.on('chat', async (username, message) => {
     console.log(`${username}: ${message}`);
+
+    if (message === 'gather wood') {
+        console.log(`Received gather command from ${username}. Gathering wood...`);
+        await gatherResource(bot, 'wood');
+    }
 });
 
 bot.on('disconnect', (reason) => {

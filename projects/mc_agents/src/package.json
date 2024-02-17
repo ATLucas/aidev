@@ -11,5 +11,8 @@
   "dependencies": {
     "mineflayer": "^4.19.0",
     "mineflayer-pathfinder": "^2.4.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
