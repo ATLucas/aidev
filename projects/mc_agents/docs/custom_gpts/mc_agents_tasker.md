@@ -6,10 +6,6 @@ MC Agents Tasker
 
 Creates development tasks for the MC Agents project
 
----------- Conversation Starters ----------
-
-
-
 ---------- Image ----------
 
 A stylized chessboard with Minecraft-themed pieces, where the king piece is crafted to resemble a Minecraft character, symbolizing leadership within the Minecraft world. The other pieces are various Minecraft blocks and items, arranged in a protective formation around the king. The image should be in a hand-drawn style with warm, Minecraft-inspired colors.
@@ -62,12 +58,12 @@ Create software that can spawn Minecraft bots into a Minecraft world and perform
 - When developing a new function, you may be provided access to a number of skill functions that may be used to implement the new skill function.
 - The integration tester will manually update `main.js` to test each new skill function. DO NOT provide instructions on how to do this. It is not necessary. 
 
-`main.js`:
 ```javascript
 const mineflayer = require('mineflayer');
 const { pathfinder, Movements } = require('mineflayer-pathfinder');
 const { BOT_CONFIG, START_POINT } = require('./config.js');
 const { navigateTo } = require('./skills/navigateTo.js');
+
 
 const bot = mineflayer.createBot(BOT_CONFIG);
 
@@ -79,18 +75,30 @@ bot.on('spawn', () => {
     
     const defaultMove = new Movements(bot, require('minecraft-data')(bot.version));
     bot.pathfinder.setMovements(defaultMove);
-    
-    // Sleep for ten seconds before teleporting
-    setTimeout(() => {
-        bot.chat(`/tp ${START_POINT.x} ${START_POINT.y} ${START_POINT.z}`);
-        
-        const targetLocation = { x: 100, y: 64, z: 50 };
-        navigateTo(bot, targetLocation);
-    }, 10000); // 10000 milliseconds = 10 seconds
+
+    // Teleport to the starting point
+    bot.chat(`/tp ${START_POINT.x} ${START_POINT.y} ${START_POINT.z}`);
 });
 
-bot.on('chat', (username, message) => {
+bot.on('chat', async (username, message) => {
     console.log(`${username}: ${message}`);
+
+    if (message.startsWith('navigate')) {
+        const args = message.split(' '); // Split the message into parts
+        if (args.length === 4) { // Check if there are exactly 4 parts: "navigate" and the three coordinates
+            try {
+                const x = parseFloat(args[1]);
+                const y = parseFloat(args[2]);
+                const z = parseFloat(args[3]);
+                const target = { x, y, z }; // Create a Vec3 object for the target location
+                await navigateTo(bot, target);
+            } catch (error) {
+                console.error('Error parsing coordinates:', error);
+            }
+        } else {
+            bot.chat("Usage: navigate <x> <y> <z>");
+        }
+    }
 });
 
 bot.on('disconnect', (reason) => {
@@ -102,7 +110,6 @@ bot.on('error', (err) => {
 });
 ```
 
-`config.js`:
 ```javascript
 const MINECRAFT_HOST = "localhost";
 const MINECRAFT_PORT = "3001";
@@ -124,4 +131,73 @@ module.exports = {
     BOT_CONFIG,
     START_POINT,
 };
+```
+
+```javascript
+// navigateTo.js located in ./skills
+
+const { goals: { GoalBlock } } = require('mineflayer-pathfinder');
+
+function navigateTo(bot, target) {
+    bot.pathfinder.setGoal(new GoalBlock(target.x, target.y, target.z));
+}
+
+module.exports = {
+    navigateTo
+};
+```
+
+```javascript
+// botMock.js located in ./test/mocks
+const Vec3 = require('vec3');
+
+/**
+ * A mock of the mineflayer bot for unit testing purposes.
+ */
+class BotMock {
+    constructor() {
+      this.entity = {
+        position: new Vec3(0, 0, 0),
+        velocity: new Vec3(0, 0, 0),
+      };
+      this.listeners = {};
+    }
+  
+    on(eventName, listener) {
+      if (!this.listeners[eventName]) {
+        this.listeners[eventName] = [];
+      }
+      this.listeners[eventName].push(listener);
+    }
+  
+    emit(eventName, ...args) {
+      if (this.listeners[eventName]) {
+        this.listeners[eventName].forEach(listener => listener(...args));
+      }
+    }
+  }
+  
+  module.exports = { BotMock };
+```
+
+```javascript
+// navigateTo.js located in ./test/skills
+const { navigateTo } = require('../../skills/navigateTo');
+const { BotMock } = require('../mocks/botMock');
+const { GoalBlock } = require('mineflayer-pathfinder').goals;
+
+describe('navigateTo function tests', () => {
+    test('should set correct GoalBlock on bot.pathfinder', () => {
+        const bot = new BotMock();
+        bot.pathfinder = { setGoal: jest.fn() };
+
+        const target = { x: 100, y: 64, z: -50 };
+        navigateTo(bot, target);
+
+        expect(bot.pathfinder.setGoal).toHaveBeenCalledWith(expect.any(GoalBlock));
+        expect(bot.pathfinder.setGoal.mock.calls[0][0].x).toBe(target.x);
+        expect(bot.pathfinder.setGoal.mock.calls[0][0].y).toBe(target.y);
+        expect(bot.pathfinder.setGoal.mock.calls[0][0].z).toBe(target.z);
+    });
+});
 ```

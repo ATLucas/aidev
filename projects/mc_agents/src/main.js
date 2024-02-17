@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer');
 const { pathfinder, Movements } = require('mineflayer-pathfinder');
 const { BOT_CONFIG, START_POINT } = require('./config.js');
-const { gatherResource } = require('./skills/gatherResource.js');
+const { navigateTo } = require('./skills/navigateTo.js');
 
 
 const bot = mineflayer.createBot(BOT_CONFIG);
@@ -22,9 +22,21 @@ bot.on('spawn', () => {
 bot.on('chat', async (username, message) => {
     console.log(`${username}: ${message}`);
 
-    if (message === 'gather wood') {
-        console.log(`Received gather command from ${username}. Gathering wood...`);
-        await gatherResource(bot, 'wood');
+    if (message.startsWith('navigate')) {
+        const args = message.split(' '); // Split the message into parts
+        if (args.length === 4) { // Check if there are exactly 4 parts: "navigate" and the three coordinates
+            try {
+                const x = parseFloat(args[1]);
+                const y = parseFloat(args[2]);
+                const z = parseFloat(args[3]);
+                const target = { x, y, z }; // Create a Vec3 object for the target location
+                await navigateTo(bot, target);
+            } catch (error) {
+                console.error('Error parsing coordinates:', error);
+            }
+        } else {
+            bot.chat("Usage: navigate <x> <y> <z>");
+        }
     }
 });
 

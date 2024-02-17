@@ -8,18 +8,9 @@ class BotMock {
     constructor() {
       this.entity = {
         position: new Vec3(0, 0, 0),
+        velocity: new Vec3(0, 0, 0),
       };
       this.listeners = {};
-    }
-  
-    findBlock(options) {
-      // This function should be overridden in tests where specific behavior is required
-      return null;
-    }
-  
-    dig(block) {
-      // This function should be overridden in tests where specific behavior is required
-      return Promise.resolve(true);
     }
   
     on(eventName, listener) {
@@ -34,8 +25,6 @@ class BotMock {
         this.listeners[eventName].forEach(listener => listener(...args));
       }
     }
-  
-    // Additional mock methods as needed for testing
   }
   
   module.exports = { BotMock };
