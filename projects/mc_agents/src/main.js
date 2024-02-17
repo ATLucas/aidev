@@ -3,6 +3,7 @@ const { pathfinder, Movements } = require('mineflayer-pathfinder');
 const { BOT_CONFIG, START_POINT } = require('./config.js');
 const { navigateTo } = require('./skills/navigateTo.js');
 const { findClosestTree } = require('./skills/findClosestTree.js');
+const { goToClosestTree } = require('./skills/goToClosestTree.js');
 
 
 const bot = mineflayer.createBot(BOT_CONFIG);
@@ -43,6 +44,10 @@ bot.on('chat', async (username, message) => {
     if (message.startsWith('findtree')) {
         const closestTreePos = await findClosestTree(bot);
         console.log(closestTreePos);
+    }
+
+    if (message.startsWith('gototree')) {
+        await goToClosestTree(bot);
     }
 });
 

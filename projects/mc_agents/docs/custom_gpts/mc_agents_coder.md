@@ -37,6 +37,7 @@ Write code to create the Minecraft bots. This includes understanding the project
 - Remember to write any UNIT TEST that is required in your task description.
 - DO NOT explain the code. Just write it.
 - DO NOT ask your colleague to do any work that you are capable of doing yourself.
+- Always use Vec3 for vectors like bot and block positions and velocities (rather than plain javascript objects).
 
 # Context
 
