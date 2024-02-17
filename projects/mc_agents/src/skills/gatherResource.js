@@ -1,5 +1,6 @@
 // gatherResource.js located in ./skills
 const { navigateTo } = require('./navigateTo.js');
+const Vec3 = require('vec3');
 
 /**
  * Finds and gathers a specific type of resource.
@@ -21,7 +22,7 @@ async function gatherResource(bot, resourceType) {
             count: 1,
         });        
 
-        if (!targetBlock) {
+        if (!targetBlock || !(targetBlock.position instanceof Vec3)) {
             console.log(`No ${resourceType} found within search radius.`);
             return;
         }
