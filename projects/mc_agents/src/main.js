@@ -4,6 +4,7 @@ const { BOT_CONFIG, START_POINT } = require('./config.js');
 const { navigateTo } = require('./skills/navigateTo.js');
 const { findClosestTree } = require('./skills/findClosestTree.js');
 const { goToClosestTree } = require('./skills/goToClosestTree.js');
+const { harvestTree } = require('./skills/harvestTree.js');
 
 
 const bot = mineflayer.createBot(BOT_CONFIG);
@@ -48,6 +49,10 @@ bot.on('chat', async (username, message) => {
 
     if (message.startsWith('gototree')) {
         await goToClosestTree(bot);
+    }
+
+    if (message.startsWith('harvesttree')) {
+        await harvestTree(bot);
     }
 });
 
