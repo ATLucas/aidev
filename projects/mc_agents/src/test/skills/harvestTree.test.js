@@ -19,9 +19,14 @@ describe('harvestTree function tests', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         bot = new BotMock();
+
+        // Mock blockAt to define where the tree is.
         bot.blockAt = jest.fn((pos) => {
-            // Tree is from (0, 60, 0) to (0, 64, 0), with one horizontal branch at (1, 62, 0)
-            if ((pos.y >= 60 && pos.y <= 64 && pos.x == 0 && pos.z == 0) || pos.equals(new Vec3(1, 62, 0))) {
+            const baseTreePositions = (pos.y >= 60 && pos.y <= 64 && pos.x === 0 && pos.z === 0);
+            const horizontalBranches = (pos.equals(new Vec3(1, 62, 0)));
+            const diagonalBranches = (pos.equals(new Vec3(2, 61, 0)) || pos.equals(new Vec3(2, 63, 0)));
+
+            if (baseTreePositions || horizontalBranches || diagonalBranches) {
                 const oakLogType = 17;
                 const block = new Block(oakLogType, 0, 0);
                 block.name = 'oak_log'; // Manually setting for simplicity in this example
@@ -36,12 +41,13 @@ describe('harvestTree function tests', () => {
     });
 
     test('should find and harvest a tree', async () => {
+
         findClosestTree.mockResolvedValue(new Vec3(0, 60, 0)); // Simulate finding the base of a tree
 
         await harvestTree(bot);
 
         expect(findClosestTree).toHaveBeenCalled();
-        expect(digBlock).toHaveBeenCalledTimes(6); // Expect digBlock to be called for each block of the tree
+        expect(digBlock).toHaveBeenCalledTimes(8); // Expect digBlock to be called for each block of the tree
     });
 
     test('should log a message if no tree is found', async () => {

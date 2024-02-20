@@ -5,7 +5,7 @@ const Vec3 = require('vec3');
 async function harvestAdjacentTreeBlocks(bot, position, visited = new Set()) {
     const directions = [];
     for (let dx = -1; dx <= 1; dx++) {
-        for (let dy = 0; dy <= 1; dy++) {
+        for (let dy = -1; dy <= 1; dy++) {
             for (let dz = -1; dz <= 1; dz++) {
                 directions.push(new Vec3(dx, dy, dz));
             }
