@@ -181,7 +181,7 @@ class BotMock {
 ```
 
 ```javascript
-// navigateTo.js located in ./test/skills
+// navigateTo.test.js located in ./test/skills
 const { navigateTo } = require('../../skills/navigateTo');
 const { BotMock } = require('../mocks/botMock');
 const { GoalBlock } = require('mineflayer-pathfinder').goals;
