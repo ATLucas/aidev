@@ -1,8 +1,6 @@
 const mineflayer = require('mineflayer');
 const { pathfinder, Movements } = require('mineflayer-pathfinder');
 const { BOT_CONFIG, START_POINT } = require('./config.js');
-const { navigateTo } = require('./skills/navigateTo.js');
-const { findClosestTree } = require('./skills/findClosestTree.js');
 const { goToClosestTree } = require('./skills/goToClosestTree.js');
 const { harvestTree } = require('./skills/harvestTree.js');
 
@@ -10,8 +8,9 @@ const { harvestTree } = require('./skills/harvestTree.js');
 const bot = mineflayer.createBot(BOT_CONFIG);
 
 bot.on('spawn', () => {
-    console.log('Bot has spawned.');
-    console.log(`Teleporting to x: ${START_POINT.x}, y: ${START_POINT.y}, z: ${START_POINT.z}`);
+    console.log(`@${bot.username} has spawned.`);
+    console.log(`Teleporting to (x=${START_POINT.x}, y=${START_POINT.y}, z=${START_POINT.z})`);
+    console.log(bot.username);
 
     bot.loadPlugin(pathfinder);
     
@@ -23,43 +22,19 @@ bot.on('spawn', () => {
 });
 
 bot.on('chat', async (username, message) => {
-    console.log(`${username}: ${message}`);
+    console.log(`@${username}: ${message}`);
 
-    if (message.startsWith('navigate')) {
-        const args = message.split(' '); // Split the message into parts
-        if (args.length === 4) { // Check if there are exactly 4 parts: "navigate" and the three coordinates
-            try {
-                const x = parseFloat(args[1]);
-                const y = parseFloat(args[2]);
-                const z = parseFloat(args[3]);
-                const target = { x, y, z }; // Create a Vec3 object for the target location
-                await navigateTo(bot, target);
-            } catch (error) {
-                console.error('Error parsing coordinates:', error);
-            }
-        } else {
-            bot.chat("Usage: navigate <x> <y> <z>");
-        }
+    if (!message.toLowerCase().startsWith(`@${bot.username.toLowerCase()}`)) {
+        return;
     }
 
-    if (message.startsWith('findtree')) {
-        const closestTreePos = await findClosestTree(bot);
-        console.log(closestTreePos);
-    }
+    const regex = new RegExp(`^@${bot.username}`, 'i');
+    const command = message.replace(regex, '').trim();
+    console.log(`@${bot.username}: ${command}`);
 
-    if (message.startsWith('gototree')) {
+    if (command.startsWith('gototree')) {
         await goToClosestTree(bot);
-    }
-
-    if (message.startsWith('harvesttree')) {
+    } else if (command.startsWith('harvesttree')) {
         await harvestTree(bot);
     }
-});
-
-bot.on('disconnect', (reason) => {
-    console.log(`Disconnected: ${reason}`);
-});
-
-bot.on('error', (err) => {
-    console.error('An error occurred:', err);
 });
