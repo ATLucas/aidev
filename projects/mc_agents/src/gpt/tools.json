@@ -1,0 +1,28 @@
+{
+    "tools": [
+        {
+            "type": "function",
+            "function": {
+                "name": "goToClosestTree",
+                "description": "Navigate to the closest tree.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "harvestTree",
+                "description": "Harvest the closest tree. Need to be close enough to mine the tree.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            }
+        }
+    ]
+}
