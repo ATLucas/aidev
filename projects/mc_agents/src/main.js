@@ -78,6 +78,7 @@ async function performGPTCommand(command) {
         run = await openai.beta.threads.runs.retrieve(gptThread.id, run.id);
 
         if (run.status == "requires_action") {
+            // console.log(`DEBUG: tool_calls=${JSON.stringify(run.required_action.submit_tool_outputs.tool_calls, null, 2)}`);
             const toolOutputs = await handleToolCalls(
                 run.required_action.submit_tool_outputs.tool_calls
             );
@@ -118,6 +119,11 @@ async function createGPTAssistant() {
     });
 }
 
+const functionMap = {
+    goToClosestTree,
+    harvestTree
+};
+
 async function handleToolCalls(toolCalls) {
 
     const toolOutputs = [];
@@ -125,9 +131,10 @@ async function handleToolCalls(toolCalls) {
     for (const call of toolCalls) {
         const funcName = call.function.name;
         const args = JSON.parse(call.function.arguments);
-        if (typeof global[funcName] === "function") {
+        if (functionMap[funcName]) {
             console.log(`Calling ${funcName}(${args})`);
-            const result = await global[funcName](args);
+            const result = await functionMap[funcName](bot, ...Object.values(args));
+            console.log(`Result: ${result}`);
             toolOutputs.push({tool_call_id: call.id, output: result});
         } else {
             console.log(`Function ${funcName} not found.`);
