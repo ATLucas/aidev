@@ -1,3 +1,5 @@
+// harvestTree.js located in ./skills
+
 const { findClosestTree } = require('./findClosestTree');
 const { digBlock } = require('./digBlock');
 const Vec3 = require('vec3');

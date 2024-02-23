@@ -2,7 +2,7 @@ const MINECRAFT_HOST = "localhost";
 const MINECRAFT_PORT = "3001";
 
 const BOT_CONFIG = {
-    username: "ALPHA",
+    username: "DIRECTOR",
     address: MINECRAFT_HOST,
     port: MINECRAFT_PORT,
     version: "1.20.1",

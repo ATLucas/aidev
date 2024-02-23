@@ -1,17 +1,12 @@
+// main.js located in ./
+
 const mineflayer = require('mineflayer');
 const { pathfinder, Movements } = require('mineflayer-pathfinder');
 const { BOT_CONFIG, START_POINT } = require('./config.js');
-const { goToClosestTree } = require('./skills/goToClosestTree.js');
-const { harvestTree } = require('./skills/harvestTree.js');
-const fs = require('fs');
-const path = require('path');
-
-const OpenAI = require('openai');
-const openai = new OpenAI();
+const { skillFunctions } = require('./skills.js');
+const { createGPTAssistant, deleteGPTAssistant, performGPTCommand } = require('./gpt.js');
 
 const bot = mineflayer.createBot(BOT_CONFIG);
-let gptAssistant = null;
-let gptThread = null;
 
 bot.on('spawn', () => {
     console.log(`@${bot.username} has spawned.`);
@@ -37,122 +32,40 @@ bot.on('chat', async (username, message) => {
     const command = message.replace(regex, '').trim();
 
     if (command.startsWith('/')) {
-        if (command.startsWith('/gototree')) {
-            await goToClosestTree(bot);
-        } else if (command.startsWith('/harvesttree')) {
-            await harvestTree(bot);
-        } else if (command.startsWith('/create')) {
-            if (!gptAssistant) {
-                await createGPTAssistant();
-            }
-        } else if (command.startsWith('/reset')) {
-            if (gptAssistant) {
-                await deleteGPTAssistant();
-            }
-            await createGPTAssistant();
-        } else if (command.startsWith('/delete')) {
-            await deleteGPTAssistant();
-        } else {
-            console.warn(`Unrecognized command: ${command}`);
-        }
+        await performCommand(bot, command);
     } else {
-        const response = await performGPTCommand(command);
+        const response = await performGPTCommand(bot, command);
         bot.chat(response);
     }
 });
 
-// TODO: Move the rest to a different file
+async function performCommand(bot, command) {
+    if (command.startsWith('/gototree')) {
 
-async function createGPTAssistant() {
+        await skillFunctions["goToClosestTree"](bot);
 
-    const instrPath = path.join(__dirname, 'gpt/instructions.md');
-    const toolsPath = path.join(__dirname, 'gpt/tools.json');
+    } else if (command.startsWith('/harvesttree')) {
 
-    let instructions;
-    let toolsData;
-    
-    try {
-        instructions = fs.readFileSync(instrPath, 'utf8');
-        const rawToolsData = fs.readFileSync(toolsPath, 'utf8');
-        toolsData = JSON.parse(rawToolsData);
-    } catch (error) {
-        console.error('Error reading files:', error);
-        return null;
-    }
-    
-    gptAssistant = await openai.beta.assistants.create({
-        name: bot.username,
-        instructions: instructions,
-        tools: toolsData["tools"],
-        model: "gpt-4-turbo-preview"
-    });
-    gptThread = await openai.beta.threads.create();
-}
+        await skillFunctions["harvestTree"](bot);
 
-async function deleteGPTAssistant() {
-    if (gptAssistant) {
-        await openai.beta.assistants.del(gptAssistant.id);
-        gptAssistant = null;
-    }
-}
+    } else if (command.startsWith('/create')) {
 
-async function performGPTCommand(command) {
-
-    if (!gptAssistant) {
-        await createGPTAssistant();
-    }
-
-    const userMessage = await openai.beta.threads.messages.create(
-        gptThread.id, { role: "user", content: command }
-    );
-
-    let run = await openai.beta.threads.runs.create(
-        gptThread.id, { assistant_id: gptAssistant.id }
-    );
-
-    while(run.status != "completed") {
-        await delay(1000);
-
-        run = await openai.beta.threads.runs.retrieve(gptThread.id, run.id);
-
-        if (run.status == "requires_action") {
-            const toolOutputs = await handleToolCalls(
-                run.required_action.submit_tool_outputs.tool_calls
-            );
-
-            run = await openai.beta.threads.runs.submitToolOutputs(
-                gptThread.id, run.id, { tool_outputs: toolOutputs }
-            );
+        if (!gptAssistant) {
+            await createGPTAssistant(bot);
         }
-    }
 
-    const threadMessages = await openai.beta.threads.messages.list(gptThread.id, after=userMessage.id);
-    return threadMessages.data[0].content[0].text.value;
-}
+    } else if (command.startsWith('/reset')) {
 
-const functionMap = {
-    goToClosestTree,
-    harvestTree
-};
-
-async function handleToolCalls(toolCalls) {
-
-    const toolOutputs = [];
-
-    for (const call of toolCalls) {
-        const funcName = call.function.name;
-        const args = JSON.parse(call.function.arguments);
-        if (functionMap[funcName]) {
-            console.log(`INFO: Calling ${funcName}(${JSON.stringify(args)})`);
-            const result = await functionMap[funcName](bot, ...Object.values(args));
-            console.log(`INFO: Result of ${funcName}() call: ${result}`);
-            toolOutputs.push({tool_call_id: call.id, output: result});
-        } else {
-            console.error(`ERROR: Function ${funcName} not found.`);
+        if (bot.gptAssistant) {
+            await deleteGPTAssistant(bot);
         }
+        await createGPTAssistant(bot);
+
+    } else if (command.startsWith('/delete')) {
+
+        await deleteGPTAssistant(bot);
+
+    } else {
+        console.warn(`Unrecognized command: ${command}`);
     }
-
-    return toolOutputs;
 }
-
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
