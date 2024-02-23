@@ -32,9 +32,10 @@ async function harvestTree(bot) {
     const treeBase = await findClosestTree(bot);
     if (!treeBase) {
         console.log("No tree found within range.");
-        return;
+        return false;
     }
     await harvestAdjacentTreeBlocks(bot, treeBase);
+    return true;
 }
 
 module.exports = {

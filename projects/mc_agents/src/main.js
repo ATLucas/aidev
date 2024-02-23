@@ -15,8 +15,7 @@ let gptThread = null;
 
 bot.on('spawn', () => {
     console.log(`@${bot.username} has spawned.`);
-    console.log(`Teleporting to (x=${START_POINT.x}, y=${START_POINT.y}, z=${START_POINT.z})`);
-    console.log(bot.username);
+    console.log(`INFO: Teleporting to (x=${START_POINT.x}, y=${START_POINT.y}, z=${START_POINT.z})`);
 
     bot.loadPlugin(pathfinder);
     
@@ -42,57 +41,27 @@ bot.on('chat', async (username, message) => {
             await goToClosestTree(bot);
         } else if (command.startsWith('/harvesttree')) {
             await harvestTree(bot);
+        } else if (command.startsWith('/create')) {
+            if (!gptAssistant) {
+                await createGPTAssistant();
+            }
         } else if (command.startsWith('/reset')) {
-            // TODO: Delete and re-create the assistant
+            if (gptAssistant) {
+                await deleteGPTAssistant();
+            }
+            await createGPTAssistant();
+        } else if (command.startsWith('/delete')) {
+            await deleteGPTAssistant();
+        } else {
+            console.warn(`Unrecognized command: ${command}`);
         }
     } else {
         const response = await performGPTCommand(command);
-        console.log(`@${bot.username}: ${response}`);
         bot.chat(response);
     }
 });
 
 // TODO: Move the rest to a different file
-
-async function performGPTCommand(command) {
-
-    if (!gptAssistant) {
-        gptAssistant = await createGPTAssistant();
-    }
-
-    if (!gptThread) {
-        gptThread = await openai.beta.threads.create();
-    }
-
-    const userMessage = await openai.beta.threads.messages.create(
-        gptThread.id, { role: "user", content: command }
-    );
-
-    let run = await openai.beta.threads.runs.create(
-        gptThread.id, { assistant_id: gptAssistant.id }
-    );
-
-    while(run.status != "completed") {
-        await delay(1000);
-
-        run = await openai.beta.threads.runs.retrieve(gptThread.id, run.id);
-
-        if (run.status == "requires_action") {
-            // console.log(`DEBUG: tool_calls=${JSON.stringify(run.required_action.submit_tool_outputs.tool_calls, null, 2)}`);
-            const toolOutputs = await handleToolCalls(
-                run.required_action.submit_tool_outputs.tool_calls
-            );
-
-            run = await openai.beta.threads.runs.submitToolOutputs(
-                gptThread.id, run.id, { tool_outputs: toolOutputs }
-            );
-        }
-    }
-
-    const threadMessages = await openai.beta.threads.messages.list(gptThread.id, after=userMessage.id);
-    console.log(`DEBUG: threadMessages.data=${JSON.stringify(threadMessages.data, null, 2)}`);
-    return threadMessages.data[0].content[0].text.value;
-}
 
 async function createGPTAssistant() {
 
@@ -111,12 +80,54 @@ async function createGPTAssistant() {
         return null;
     }
     
-    return await openai.beta.assistants.create({
+    gptAssistant = await openai.beta.assistants.create({
         name: bot.username,
         instructions: instructions,
         tools: toolsData["tools"],
         model: "gpt-4-turbo-preview"
     });
+    gptThread = await openai.beta.threads.create();
+}
+
+async function deleteGPTAssistant() {
+    if (gptAssistant) {
+        await openai.beta.assistants.del(gptAssistant.id);
+        gptAssistant = null;
+    }
+}
+
+async function performGPTCommand(command) {
+
+    if (!gptAssistant) {
+        await createGPTAssistant();
+    }
+
+    const userMessage = await openai.beta.threads.messages.create(
+        gptThread.id, { role: "user", content: command }
+    );
+
+    let run = await openai.beta.threads.runs.create(
+        gptThread.id, { assistant_id: gptAssistant.id }
+    );
+
+    while(run.status != "completed") {
+        await delay(1000);
+
+        run = await openai.beta.threads.runs.retrieve(gptThread.id, run.id);
+
+        if (run.status == "requires_action") {
+            const toolOutputs = await handleToolCalls(
+                run.required_action.submit_tool_outputs.tool_calls
+            );
+
+            run = await openai.beta.threads.runs.submitToolOutputs(
+                gptThread.id, run.id, { tool_outputs: toolOutputs }
+            );
+        }
+    }
+
+    const threadMessages = await openai.beta.threads.messages.list(gptThread.id, after=userMessage.id);
+    return threadMessages.data[0].content[0].text.value;
 }
 
 const functionMap = {
@@ -132,12 +143,12 @@ async function handleToolCalls(toolCalls) {
         const funcName = call.function.name;
         const args = JSON.parse(call.function.arguments);
         if (functionMap[funcName]) {
-            console.log(`Calling ${funcName}(${args})`);
+            console.log(`INFO: Calling ${funcName}(${JSON.stringify(args)})`);
             const result = await functionMap[funcName](bot, ...Object.values(args));
-            console.log(`Result: ${result}`);
+            console.log(`INFO: Result of ${funcName}() call: ${result}`);
             toolOutputs.push({tool_call_id: call.id, output: result});
         } else {
-            console.log(`Function ${funcName} not found.`);
+            console.error(`ERROR: Function ${funcName} not found.`);
         }
     }
 
