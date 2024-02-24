@@ -3,8 +3,8 @@
         {
             "type": "function",
             "function": {
-                "name": "goToClosestTree",
-                "description": "Navigate to the closest tree.",
+                "name": "queryInventory",
+                "description": "Summarize your inventory.",
                 "parameters": {
                     "type": "object",
                     "properties": {},
@@ -16,7 +16,7 @@
             "type": "function",
             "function": {
                 "name": "harvestTree",
-                "description": "Harvest the closest tree. Need to be close enough to mine the tree.",
+                "description": "Find the closest tree, go to it, and harvest its wood.",
                 "parameters": {
                     "type": "object",
                     "properties": {},
