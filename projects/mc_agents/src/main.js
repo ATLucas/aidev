@@ -113,6 +113,10 @@ async function performCommand(bot, command) {
 
         await skillFunctions["queryInventory"](bot);
 
+    } else if (command.startsWith('/store')) {
+
+        await skillFunctions["storeInventory"](bot);
+
     } else if (command.startsWith('/harvesttree')) {
 
         await skillFunctions["harvestTree"](bot);

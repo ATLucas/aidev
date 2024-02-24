@@ -15,6 +15,18 @@
         {
             "type": "function",
             "function": {
+                "name": "storeInventory",
+                "description": "Find the nearest chest, go to it, and store all inventory items in the chest.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
                 "name": "harvestTree",
                 "description": "Find the closest tree, go to it, and harvest its wood.",
                 "parameters": {
