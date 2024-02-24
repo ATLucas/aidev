@@ -2,7 +2,7 @@
 
 async function digBlock(bot, block) {
     if (!bot.canDigBlock(block)) {
-        console.log("Cannot dig this block:", block.name);
+        console.log("INFO: Cannot dig this block:", block.name);
         return;
     }
 
@@ -10,7 +10,7 @@ async function digBlock(bot, block) {
         // Start digging the block
         bot.dig(block, err => {
             if (err) {
-                console.log("Failed to dig block:", block.name, err);
+                console.log("INFO: Failed to dig block:", block.name, err);
                 reject(err);
             }
         });
@@ -18,7 +18,7 @@ async function digBlock(bot, block) {
         // Listen for the diggingCompleted event to resolve the promise
         bot.once('diggingCompleted', (completedBlock) => {
             if (completedBlock.position.equals(block.position)) {
-                console.log("Block dug successfully:", block.name);
+                // console.log("DEBUG: Block dug successfully:", block.name);
                 resolve();
             }
         });

@@ -1,10 +1,58 @@
 // harvestTree.js located in ./skills
 
-const { findClosestTree } = require('./findClosestTree');
 const { digBlock } = require('./digBlock');
+const { goNear } = require('./goNear');
+const { goTo } = require('./goTo');
 const Vec3 = require('vec3');
 
-async function harvestAdjacentTreeBlocks(bot, position, visited = new Set()) {
+const LOG_BLOCKS = ['oak_log', 'spruce_log', 'birch_log', 'jungle_log', 'acacia_log', 'dark_oak_log'];
+
+async function harvestTree(bot) {
+
+    // Find the closest tree
+    const treeBase = await findClosestTree(bot);
+    if (!treeBase) {
+        console.log("INFO: No tree found within range.");
+        return false;
+    }
+
+    // Go to the tree
+    await goNear(bot, treeBase);
+
+    // Harvest the tree
+    const droppedItems = [];
+    await harvestAdjacentTreeBlocks(bot, droppedItems, treeBase);
+
+    // Collect the dropped logs
+    console.log("INFO: Collecting items")
+    for (const item of droppedItems) {
+        await goTo(bot, item.position);
+    }
+    console.log("INFO: Done collecting items")
+    return true;
+}
+
+async function findClosestTree(bot) {
+    const treeBlocks = LOG_BLOCKS;
+    const maxDistance = 64; // Maximum search radius for trees
+    const block = bot.findBlock({
+        point: bot.entity.position,
+        matching: block => treeBlocks.includes(block.name),
+        maxDistance: maxDistance,
+        minCount: 1,
+    });
+
+    if (block) {
+        // Return the base of the tree (assuming the lowest log block is the base)
+        return new Vec3(block.position.x, block.position.y, block.position.z);
+    } else {
+        // Return null if no tree is found within the search radius
+        return null;
+    }
+}
+
+async function harvestAdjacentTreeBlocks(bot, droppedItems, position, visited = new Set()) {
+
     const directions = [];
     for (let dx = -1; dx <= 1; dx++) {
         for (let dy = -1; dy <= 1; dy++) {
@@ -21,23 +69,28 @@ async function harvestAdjacentTreeBlocks(bot, position, visited = new Set()) {
         if (!visited.has(key)) {
             visited.add(key);
             const block = bot.blockAt(newPos);
-            if (block && ['oak_log', 'spruce_log', 'birch_log', 'jungle_log', 'acacia_log', 'dark_oak_log'].includes(block.name)) {
-                console.log(`Tree block found at: ${newPos}`);
+            if (block && LOG_BLOCKS.includes(block.name)) {
+                //console.log(`DEBUG: Tree block found at: ${newPos}`);
+                
+                // Listen for item drop
+                const itemDropCallback = (entity) => {
+                    if (entity.position.distanceTo(block.position) <= 1) {
+                        droppedItems.push(entity);
+                    }
+                };
+                bot.on('itemDrop', itemDropCallback);
+
+                // Dig the block
                 await digBlock(bot, block);
-                await harvestAdjacentTreeBlocks(bot, newPos, visited);
+
+                // Stop listening for item drop
+                bot.removeListener('itemDrop', itemDropCallback)
+
+                // Continue harvesting
+                await harvestAdjacentTreeBlocks(bot, droppedItems, newPos, visited);
             }
         }
     }
-}
-
-async function harvestTree(bot) {
-    const treeBase = await findClosestTree(bot);
-    if (!treeBase) {
-        console.log("No tree found within range.");
-        return false;
-    }
-    await harvestAdjacentTreeBlocks(bot, treeBase);
-    return true;
 }
 
 module.exports = {

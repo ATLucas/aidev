@@ -34,10 +34,11 @@ Write code to create the Minecraft bots. This includes understanding the project
 # Method
 
 - WRITE ANY CODE that your more senior colleague assigns to you.
-- Remember to write any UNIT TEST that is required in your task description.
 - DO NOT explain the code. Just write it.
 - DO NOT ask your colleague to do any work that you are capable of doing yourself.
 - Always use Vec3 for vectors like bot and block positions and velocities (rather than plain javascript objects).
+- Always start files with a comment containing the file name and path. E.g. `// harvestTree.js located in ./skills`
+- Always use CommonJS syntax. E.g. `const { findClosestTree } = require('./findClosestTree');`
 
 # Context
 
