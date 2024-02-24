@@ -9,7 +9,7 @@ const openai = new OpenAI();
 
 async function createGPTAssistant(bot) {
 
-    concole.log(`INFO: Creating GPT for ${bot.username}`);
+    console.log(`INFO: Creating GPT for ${bot.username}`);
 
     const instrPath = path.join(__dirname, 'gpt/instructions.md');
     const toolsPath = path.join(__dirname, 'gpt/tools.json');
@@ -36,7 +36,7 @@ async function createGPTAssistant(bot) {
 }
 
 async function deleteGPTAssistant(bot) {
-    concole.log(`INFO: Deleting GPT for ${bot.username}`);
+    console.log(`INFO: Deleting GPT for ${bot.username}`);
     if (bot.gptAssistant) {
         await openai.beta.assistants.del(bot.gptAssistant.id);
         bot.gptAssistant = null;
