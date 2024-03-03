@@ -90,8 +90,9 @@ async function _handleToolCalls(bot, toolCalls) {
         }
         console.log(`INFO: Calling ${funcName}(${JSON.stringify(args)})`);
         const result = await skillFunctions[funcName](bot, ...Object.values(args));
-        console.log(`INFO: Result of ${funcName}() call: ${result}`);
-        toolOutputs.push({tool_call_id: call.id, output: result});
+        const resultJson = JSON.stringify(result);
+        console.log(`INFO: Result of ${funcName}() call: ${resultJson}`);
+        toolOutputs.push({tool_call_id: call.id, output: resultJson});
     }
 
     return toolOutputs;

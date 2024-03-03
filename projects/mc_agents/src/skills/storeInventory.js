@@ -13,8 +13,9 @@ async function storeInventory(bot) {
     });
 
     if (!chestBlock) {
-        console.log("INFO: No chest found within range.");
-        return false;
+        const errMsg = "No chest found within range.";
+        console.log(`INFO: ${errMsg}`);
+        return {success: false, error: errMsg};
     }
 
     // Convert the chest block position to Vec3 for goNear
@@ -33,18 +34,30 @@ async function storeInventory(bot) {
             await chest.deposit(item.type, null, item.count);
             console.log(`INFO: Deposited ${item.count} of ${item.name}.`);
         } catch (err) {
-            console.error(`ERROR: Failed to deposit ${item.name}: ${err.message}`);
             // Attempt to close the chest before exiting the function due to an error
             await chest.close();
-            return false;
+
+            const errMsg = `Failed to deposit ${item.name}: ${err.message}`;
+            console.error(`ERROR: ${errMsg}`);
+            return {success: false, error: errMsg};
         }
     }
+
+    // Read the chest contents after depositing items
+    const chestContents = {};
+    chest.containerItems().forEach(item => {
+        if (chestContents[item.name]) {
+            chestContents[item.name] += item.count;
+        } else {
+            chestContents[item.name] = item.count;
+        }
+    });
 
     // Close the chest after depositing items
     await chest.close();
     console.log("INFO: Chest closed.");
 
-    return true;
+    return { success: true, chestContents: chestContents };
 }
 
 module.exports = {

@@ -1,4 +1,4 @@
-// inventory.js located in ./skills
+// queryInventory.js located in ./skills
 
 function queryInventory(bot) {
     // Initialize an object to hold the summary
@@ -18,7 +18,7 @@ function queryInventory(bot) {
   
     // Log the summary to the console and return
     console.log(`Inventory: ${JSON.stringify(summary, null, 2)}`);
-    return JSON.stringify(summary);
+    return summary;
   }
 
   module.exports = {

@@ -6,11 +6,12 @@ const { PLAYER_NAME } = require('../config.js');
 async function come(bot, playerName=PLAYER_NAME) {
     const player = bot.players[playerName]?.entity;
     if (!player) {
-        console.log(`Player ${playerName} not found`);
-        return false;
+        const errMsg = `Player ${playerName} not found`;
+        console.log(`INFO: ${errMsg}`);
+        return {success: false, error: errMsg};
     }
     await goNear(bot, player.position);
-    return true;
+    return {success: true};
 }
 
 module.exports = {

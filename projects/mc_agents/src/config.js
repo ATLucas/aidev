@@ -11,7 +11,7 @@ const BOT_CONFIG = {
     viewDistance: "tiny",
 };
 
-const START_POINT = { x: 327, y: 68, z: 32 }; // Forest
+const START_POINT = { x: 356, y: 64, z: 64 }; // Forest
 // const START_POINT = { x: 256, y: 63, z: 6 }; // Beach
 
 module.exports = {

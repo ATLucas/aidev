@@ -3,10 +3,10 @@
 async function digBlock(bot, block) {
     if (!bot.canDigBlock(block)) {
         console.log("INFO: Cannot dig this block:", block.name);
-        return;
+        return { success: false };
     }
 
-    return new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
         // Start digging the block
         bot.dig(block, err => {
             if (err) {
@@ -18,7 +18,6 @@ async function digBlock(bot, block) {
         // Listen for the diggingCompleted event to resolve the promise
         bot.once('diggingCompleted', (completedBlock) => {
             if (completedBlock.position.equals(block.position)) {
-                // console.log("DEBUG: Block dug successfully:", block.name);
                 resolve();
             }
         });
@@ -30,6 +29,8 @@ async function digBlock(bot, block) {
             }
         });
     });
+
+    return { success: true };
 }
 
 module.exports = {

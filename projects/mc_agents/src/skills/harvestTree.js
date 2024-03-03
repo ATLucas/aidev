@@ -3,6 +3,7 @@
 const { digBlock } = require('./digBlock');
 const { goNear } = require('./goNear');
 const { goTo } = require('./goTo');
+const { queryInventory } = require('./queryInventory');
 const Vec3 = require('vec3');
 
 const LOG_BLOCKS = ['oak_log', 'spruce_log', 'birch_log', 'jungle_log', 'acacia_log', 'dark_oak_log'];
@@ -13,7 +14,7 @@ async function harvestTree(bot) {
     const treeBase = await findClosestTree(bot);
     if (!treeBase) {
         console.log("INFO: No tree found within range.");
-        return false;
+        return { success: true };
     }
 
     // Go to the tree
@@ -29,7 +30,7 @@ async function harvestTree(bot) {
         await goTo(bot, item.position);
     }
     console.log("INFO: Done collecting items")
-    return true;
+    return { success: true, inventory: queryInventory(bot) };
 }
 
 async function findClosestTree(bot) {
