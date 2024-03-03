@@ -4,7 +4,7 @@ const MINECRAFT_PORT = "3001";
 const PLAYER_NAME = "atlucas";
 
 const BOT_CONFIG = {
-    username: "ALPHA",
+    username: "alpha",
     address: MINECRAFT_HOST,
     port: MINECRAFT_PORT,
     version: "1.20.1",
