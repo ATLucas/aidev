@@ -8,8 +8,6 @@ const { createGPTAssistant, deleteGPTAssistant, performGPTCommand } = require('.
 
 const botRegistry = {};
 
-const CYAN_MSG_PREFIX = "§3";
-
 async function createBot(botConfig) {
     try {
         const bot = mineflayer.createBot(botConfig);
@@ -108,6 +106,10 @@ async function performCommand(bot, command) {
     } else if (command.startsWith('/delete')) {
 
         await deleteGPTAssistant(bot);
+
+    } else if (command.startsWith('/come')) {
+
+        await skillFunctions["come"](bot);
 
     } else if (command.startsWith('/inventory')) {
 

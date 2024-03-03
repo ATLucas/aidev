@@ -2,8 +2,8 @@
 
 const { goals: { GoalNear } } = require('mineflayer-pathfinder');
 
-async function goNear(bot, target) {
-    await bot.pathfinder.goto(new GoalNear(target.x, target.y, target.z, 2));
+async function goNear(bot, target, range=2) {
+    await bot.pathfinder.goto(new GoalNear(target.x, target.y, target.z, range));
     return true;
 }
 

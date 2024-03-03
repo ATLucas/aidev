@@ -3,6 +3,18 @@
         {
             "type": "function",
             "function": {
+                "name": "come",
+                "description": "Come near the player.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
                 "name": "queryInventory",
                 "description": "Summarize your inventory.",
                 "parameters": {
