@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const OpenAI = require('openai');
 const { skillFunctions } = require('./skills.js');
+const { sleep } = require('./utils.js');
 
 const openai = new OpenAI();
 
@@ -58,7 +59,7 @@ async function performGPTCommand(bot, command) {
     );
 
     while(run.status != "completed") {
-        await delay(1000);
+        await sleep(1000);
 
         run = await openai.beta.threads.runs.retrieve(bot.gptThread.id, run.id);
 
@@ -97,8 +98,6 @@ async function _handleToolCalls(bot, toolCalls) {
 
     return toolOutputs;
 }
-
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 module.exports = {
     createGPTAssistant,

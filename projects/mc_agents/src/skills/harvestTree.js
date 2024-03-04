@@ -4,6 +4,7 @@ const { digBlock } = require('./digBlock');
 const { goNear } = require('./goNear');
 const { goTo } = require('./goTo');
 const { queryInventory } = require('./queryInventory');
+const { sleep } = require('../utils.js');
 const Vec3 = require('vec3');
 
 const LOG_BLOCKS = ['oak_log', 'spruce_log', 'birch_log', 'jungle_log', 'acacia_log', 'dark_oak_log'];
@@ -24,10 +25,17 @@ async function harvestTree(bot) {
     const droppedItems = [];
     await harvestAdjacentTreeBlocks(bot, droppedItems, treeBase);
 
+    // Wait for last item to fall to the ground.
+    await sleep(1000);
+
     // Collect the dropped logs
     console.log("INFO: Collecting items")
-    for (const item of droppedItems) {
-        await goTo(bot, item.position);
+    try {
+        for (const item of droppedItems) {
+            await goTo(bot, item.position);
+        }
+    } catch (error) {
+        console.error(`ERROR: Failed to collect all dropped items: ${error}`)
     }
     console.log("INFO: Done collecting items")
     return { success: true, inventory: queryInventory(bot) };
@@ -75,7 +83,7 @@ async function harvestAdjacentTreeBlocks(bot, droppedItems, position, visited = 
                 
                 // Listen for item drop
                 const itemDropCallback = (entity) => {
-                    if (entity.position.distanceTo(block.position) <= 1) {
+                    if (entity.position.distanceTo(block.position) <= 5) {
                         droppedItems.push(entity);
                     }
                 };

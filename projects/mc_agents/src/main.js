@@ -52,12 +52,12 @@ async function onBotSpawn(bot) {
 
 async function onBotChat(bot, username, message) {
 
-    console.log(`@${username}: ${message}`);
-            
     // Only pay attention to messages directed at this bot
     if (!message.toLowerCase().startsWith(`@${bot.username.toLowerCase()}`)) {
         return;
     }
+
+    console.log(`@${username}: ${message}`);
 
     // Remove the direct address
     const regex = new RegExp(`^@${bot.username}`, 'i');
