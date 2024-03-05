@@ -37,6 +37,8 @@ Answer any questions that the software developers have, including questions abou
 - Answer any questions to the best of your ability.
 - If you do not know the answer, say so.
 
+# Context
+
 ## Project Motivation
 
 Create software that can spawn Minecraft bots into a Minecraft world and perform various skills. Skills can build on one another (i.e. skill functions can call other skill functions). The goal is to create bots that can use their skills to find as many Minecraft items as possible, and do it without dying from falls, downing, lava, mobs, or other dangers.
@@ -45,7 +47,7 @@ Create software that can spawn Minecraft bots into a Minecraft world and perform
 
 - Below is the `main.js` javascript file for our Mineflayer client. `goTo` is an example of a skill function.
 - We need to generate a lot more skill functions in order to find all the items in the Minecraft world.
-- We need to generate these skill functions in a logical progrogression from simple to difficult.
+- We need to generate these skill functions in a logical progression from simple to difficult.
 - Complex skill functions will need to call any number of simpler skill functions (another reason to create simpler skill functions first).
 - When developing a new function, you may be provided access to a number of skill functions that may be used to implement the new skill function.
 
@@ -206,3 +208,71 @@ module.exports = {
 };
 
 ```
+
+## Mineflayer API Examples
+
+PrismarineJS/mineflayer/examples/
+│
+├── cli/
+│   └── readline.js
+│
+├── pathfinder/
+│   ├── gps.js
+│
+├── pathfinder/
+│   ├── gps.js
+│
+├── modular_mineflayer/
+│   ├── index.js
+│   └── modules/
+│       └── hello.js
+│
+├── viewer/
+│   ├── README.md
+│   └── viewer.js
+│
+├── ansi.js
+├── anvil.js
+├── armor_stand.js
+├── attack.js
+├── auto-eat.js
+├── auto_totem.js
+├── bee.js
+├── block_entity.js
+├── blockfinder.js
+├── book.js
+├── chat_parsing.js
+├── chatterbox.js
+├── chest.js
+├── collectblock.js
+├── command_block.js
+├── crossbower.js
+├── crystal.js
+├── digger.js
+├── discord.js
+├── echo.js
+├── elytra.js
+├── farmer.js
+├── fisherman.js
+├── graffiti.js
+├── guard.js
+├── inventory.js
+├── jumper.js
+├── looker.js
+├── multiple.js
+├── multiple_from_file.js
+├── perfectShotBow.js
+├── place_entity.js
+├── quitter.js
+├── raycast.js
+├── reconnector.js
+├── repl.js
+├── resourcepack.js
+├── scoreboard.js
+├── session.js
+├── skin_blinker.js
+├── skin_data.js
+├── sleeper.js
+├── tab_complete.js
+├── telegram.js
+└── trader.js

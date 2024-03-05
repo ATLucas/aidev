@@ -1,0 +1,237 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "GitHub Repository File Access API",
+      "version": "1.0.0",
+      "description": "API for searching and reading files in the PrismarineJS/mineflayer GitHub repository."
+    },
+    "servers": [
+      {
+        "url": "https://api.github.com"
+      }
+    ],
+    "paths": {
+      "/repos/{owner}/{repo}/contents/{path}": {
+        "get": {
+          "summary": "Get the contents of a file or directory",
+          "description": "This endpoint retrieves the contents of a file or directory in the repository.",
+          "operationId": "getRepositoryContent",
+          "parameters": [
+            {
+              "name": "owner",
+              "in": "path",
+              "required": true,
+              "description": "Owner of the repository",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "repo",
+              "in": "path",
+              "required": true,
+              "description": "Repository name",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "path",
+              "in": "path",
+              "required": true,
+              "description": "Path to the file or directory",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "encoding": {
+                        "type": "string"
+                      },
+                      "size": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "sha": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": "string"
+                      },
+                      "git_url": {
+                        "type": "string"
+                      },
+                      "html_url": {
+                        "type": "string"
+                      },
+                      "download_url": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "File not found"
+            }
+          }
+        }
+      },
+      "/search/code": {
+        "get": {
+          "summary": "Search for files in a repository",
+          "description": "This endpoint searches for files in a repository based on a search query.",
+          "operationId": "searchRepositoryCode",
+          "parameters": [
+            {
+              "name": "q",
+              "in": "query",
+              "required": true,
+              "description": "Search term. Example: 'addClass in:file language:js repo:PrismarineJS/mineflayer'",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "sha": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "git_url": {
+                          "type": "string"
+                        },
+                        "html_url": {
+                          "type": "string"
+                        },
+                        "repository": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "node_id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "full_name": {
+                              "type": "string"
+                            },
+                            "private": {
+                              "type": "boolean"
+                            },
+                            "owner": {
+                              "type": "object",
+                              "properties": {
+                                "login": {
+                                  "type": "string"
+                                },
+                                "id": {
+                                  "type": "integer"
+                                },
+                                "node_id": {
+                                  "type": "string"
+                                },
+                                "avatar_url": {
+                                  "type": "string"
+                                },
+                                "gravatar_id": {
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "type": "string"
+                                },
+                                "html_url": {
+                                  "type": "string"
+                                },
+                                "followers_url": {
+                                  "type": "string"
+                                },
+                                "following_url": {
+                                  "type": "string"
+                                },
+                                "gists_url": {
+                                  "type": "string"
+                                },
+                                "starred_url": {
+                                  "type": "string"
+                                },
+                                "subscriptions_url": {
+                                  "type": "string"
+                                },
+                                "organizations_url": {
+                                  "type": "string"
+                                },
+                                "repos_url": {
+                                  "type": "string"
+                                },
+                                "events_url": {
+                                  "type": "string"
+                                },
+                                "received_events_url": {
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "type": "string"
+                                },
+                                "site_admin": {
+                                  "type": "boolean"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Failed"
+            }
+          }
+        }
+      }
+    }
+  }
+  
