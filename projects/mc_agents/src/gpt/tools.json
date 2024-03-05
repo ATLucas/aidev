@@ -1,0 +1,52 @@
+{
+    "tools": [
+        {
+            "type": "function",
+            "function": {
+                "name": "come",
+                "description": "Come near the player.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "queryInventory",
+                "description": "Summarize your inventory.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "storeInventory",
+                "description": "Find the nearest chest, go to it, and store all inventory items in the chest.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "harvestTree",
+                "description": "Find the closest tree, go to it, and harvest its wood.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            }
+        }
+    ]
+}

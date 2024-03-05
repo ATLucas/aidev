@@ -10,6 +10,13 @@
   "license": "ISC",
   "dependencies": {
     "mineflayer": "^4.19.0",
-    "mineflayer-pathfinder": "^2.4.5"
+    "mineflayer-pathfinder": "^2.4.5",
+    "openai": "^4.28.0",
+    "prismarine-block": "^1.17.1",
+    "prismarine-registry": "^1.7.0",
+    "vec3": "^0.1.10"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
